@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Inner Grove — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --deep: #0f1a0f;
+  --forest: #1a2e1a;
+  --gold: #d4a843;
+  --gold-light: rgba(212,168,67,0.15);
+  --cream: #f5f0e8;
+  --soft: #c8b896;
+  --muted: rgba(200,184,150,0.4);
+  --leaf: #a8c887;
+  --sage: #8fac72;
+  --rose: #e8a8a0;
+  --teal: #9accd4;
+  --purple: #c8a8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--deep);
+  min-height: 100vh;
+  color: var(--cream);
+}
+
+/* LOGIN */
+#loginScreen {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:24px;
+  background: linear-gradient(180deg, #050d05 0%, #1a2e1a 100%);
+}
+.login-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(212,168,67,.25);
+  border-radius: 24px; padding: 40px 32px;
+  max-width: 340px; width: 100%; text-align: center;
+}
+.login-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; font-weight: 400; color: var(--cream);
+  margin-bottom: 4px;
+}
+.login-card p { font-family: 'Playfair Display', serif; font-style: italic; font-size: 13px; color: var(--soft); margin-bottom: 28px; }
+.input {
+  width: 100%; padding: 12px 16px; margin-bottom: 12px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; font-family: 'Jost', sans-serif; font-size: 14px;
+  color: var(--cream); outline: none; transition: border .2s;
+}
+.input:focus { border-color: rgba(212,168,67,.5); }
+.input::placeholder { color: rgba(200,184,150,.35); }
+.btn {
+  width: 100%; padding: 13px; background: transparent;
+  color: var(--gold); border: 1.5px solid var(--gold);
+  border-radius: 50px; font-family: 'Jost', sans-serif;
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: all .3s;
+}
+.btn:hover { background: var(--gold); color: var(--deep); }
+.err { font-size: 12px; color: #f08080; margin-top: 10px; min-height: 16px; }
+
+/* ADMIN APP */
+#adminApp { display: none; }
+
+.topbar {
+  background: rgba(0,0,0,.4);
+  border-bottom: 1px solid rgba(212,168,67,.12);
+  padding: 16px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
+}
+.topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--cream);
+}
+.topbar-title em { font-style: italic; color: var(--gold); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.back-btn {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px; padding: 6px 16px; font-size: 12px;
+  color: var(--soft); cursor: pointer; transition: all .2s;
+  font-family: 'Jost', sans-serif; letter-spacing: .5px;
+  text-decoration: none; display: inline-block;
+}
+.back-btn:hover { border-color: rgba(212,168,67,.3); color: var(--gold); }
+
+.main { padding: 24px; max-width: 800px; margin: 0 auto; }
+
+/* STATS GRID */
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 24px;
+}
+.stat-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px; padding: 20px;
+  position: relative; overflow: hidden;
+}
+.stat-glow {
+  position: absolute; top: -20px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  opacity: .07; pointer-events: none;
+}
+.stat-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 400; color: var(--cream);
+  line-height: 1; margin-bottom: 4px;
+}
+.stat-sub { font-size: 11px; color: var(--soft); }
+
+/* SECTION */
+.section {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px; padding: 20px; margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; font-weight: 400; color: var(--cream);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+
+/* RITUAL BARS */
+.ritual-row { margin-bottom: 12px; }
+.ritual-name { font-size: 13px; color: var(--cream); margin-bottom: 5px; display: flex; justify-content: space-between; }
+.ritual-name span { color: var(--soft); font-size: 12px; }
+.ritual-bar { height: 6px; background: rgba(255,255,255,.06); border-radius: 6px; overflow: hidden; }
+.ritual-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--sage) 0%, var(--gold) 100%); transition: width 1s ease; }
+
+/* ANNOUNCEMENT */
+.announce-area {
+  width: 100%; min-height: 100px; padding: 14px;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; font-family: 'Playfair Display', serif;
+  font-size: 15px; color: var(--cream); outline: none; resize: vertical;
+  transition: border .2s; margin-bottom: 12px;
+}
+.announce-area:focus { border-color: rgba(212,168,67,.4); }
+.announce-area::placeholder { color: rgba(200,184,150,.3); font-style: italic; }
+.announce-btn {
+  background: transparent; color: var(--gold);
+  border: 1.5px solid var(--gold); border-radius: 50px;
+  padding: 11px 32px; font-family: 'Jost', sans-serif;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all .3s;
+}
+.announce-btn:hover { background: var(--gold); color: var(--deep); }
+.announce-success { font-size: 13px; color: var(--leaf); margin-top: 10px; font-family: 'Playfair Display', serif; font-style: italic; min-height: 18px; }
+
+/* REFRESH */
+.refresh-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 14px; transition: all .3s;
+  padding: 2px 6px; border-radius: 8px;
+}
+.refresh-btn:hover { color: var(--gold); transform: rotate(180deg); }
+
+/* LOADING */
+.loading { text-align: center; padding: 40px; font-family: 'Playfair Display', serif; font-style: italic; color: var(--soft); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(26,46,26,.96); color: var(--cream);
+  border: 1px solid rgba(212,168,67,.3); padding: 11px 22px;
+  border-radius: 20px; font-size: 13px; opacity: 0;
+  transition: all .4s; z-index: 200; pointer-events: none;
+  font-family: 'Playfair Display', serif; font-style: italic;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.stat-card { animation: fadeUp .4s ease forwards; }
+.stat-card:nth-child(2) { animation-delay: .06s; }
+.stat-card:nth-child(3) { animation-delay: .12s; }
+.stat-card:nth-child(4) { animation-delay: .18s; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div style="font-size:36px;margin-bottom:14px">🌙</div>
+    <h1>Grove Admin</h1>
+    <p>Hallie's dashboard — for her eyes only 🌿</p>
+    <input class="input" id="adminEmail" type="email" placeholder="Email...">
+    <input class="input" id="adminPass" type="password" placeholder="Password...">
+    <button class="btn" onclick="adminLogin()">Enter Dashboard</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <div class="topbar">
+    <div class="topbar-title">My <em>Inner Grove</em> — Admin 🌿</div>
+    <div class="topbar-right">
+      <button class="back-btn" onclick="window.location.href='https://my-inner-grove.netlify.app'">← Back to Grove</button>
+      <button class="back-btn" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="loadingMsg" class="loading">Loading your grove data... 🌱</div>
+
+    <div id="dashContent" style="display:none">
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--gold)"></div>
+          <div class="stat-label">Total Wanderers</div>
+          <div class="stat-value" id="statUsers">—</div>
+          <div class="stat-sub">accounts created</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--leaf)"></div>
+          <div class="stat-label">Active Today</div>
+          <div class="stat-value" id="statActive">—</div>
+          <div class="stat-sub">opened the grove today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--teal)"></div>
+          <div class="stat-label">Total Rituals</div>
+          <div class="stat-value" id="statRituals">—</div>
+          <div class="stat-sub">acts of self care</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-glow" style="background:var(--purple)"></div>
+          <div class="stat-label">Longest Streak</div>
+          <div class="stat-value" id="statStreak">—</div>
+          <div class="stat-sub">days in a row</div>
+        </div>
+      </div>
+
+      <!-- POPULAR RITUALS -->
+      <div class="section">
+        <div class="section-title">
+          🌿 Most Loved Rituals
+          <button class="refresh-btn" onclick="loadRituals()" title="Refresh">↻</button>
+        </div>
+        <div id="ritualsContainer"><div class="loading" style="padding:20px">Loading... 🌱</div></div>
+      </div>
+
+      <!-- ANNOUNCEMENT -->
+      <div class="section">
+        <div class="section-title">📣 Send Announcement</div>
+        <p style="font-size:13px;color:var(--soft);margin-bottom:16px;line-height:1.6;font-family:'Playfair Display',serif;font-style:italic">
+          Write a message to all grove members. It will appear as a notification the next time they open the app.
+        </p>
+        <textarea class="announce-area" id="announceText" placeholder="Write something warm and loving for your grove community..."></textarea>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <button class="announce-btn" onclick="sendAnnouncement()">Send to Grove 🌿</button>
+          <div class="announce-success" id="announceSuccess"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://sziggntdndrjyjtcomld.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6aWdnbnRkbmRyanlqdGNvbWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjAzODAsImV4cCI6MjA5MDI5NjM4MH0.rHQ5Ch_eTzWMdjoxlDqeq4Hn6x__VH9cnduFvmDndo0';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value.trim();
+  const err = document.getElementById('loginErr');
+  err.textContent = '';
+
+  const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = error.message; return; }
+
+  // Check if admin
+  const { data: profile } = await supa.from('grove_profiles').select('is_admin, name').eq('id', data.user.id).single();
+  if (!profile?.is_admin) {
+    await supa.auth.signOut();
+    err.textContent = 'Access denied. Admin only 🌿';
+    return;
+  }
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  loadDashboard();
+}
+
+async function adminLogout() {
+  await supa.auth.signOut();
+  window.location.reload();
+}
+
+async function loadDashboard() {
+  await Promise.all([loadStats(), loadRituals()]);
+  document.getElementById('loadingMsg').style.display = 'none';
+  document.getElementById('dashContent').style.display = 'block';
+}
+
+async function loadStats() {
+  const today = new Date().toISOString().split('T')[0];
+
+  // Total users
+  const { count: userCount } = await supa.from('grove_profiles').select('*', { count: 'exact', head: true });
+  document.getElementById('statUsers').textContent = userCount || 0;
+
+  // Active today
+  const { count: activeCount } = await supa.from('grove_profiles').select('*', { count: 'exact', head: true }).eq('last_active', today);
+  document.getElementById('statActive').textContent = activeCount || 0;
+
+  // Total rituals
+  const { count: ritualCount } = await supa.from('grove_completions').select('*', { count: 'exact', head: true });
+  document.getElementById('statRituals').textContent = ritualCount || 0;
+
+  // Longest streak
+  const { data: streaks } = await supa.from('grove_profiles').select('longest_streak').order('longest_streak', { ascending: false }).limit(1);
+  document.getElementById('statStreak').textContent = streaks?.[0]?.longest_streak || 0;
+}
+
+async function loadRituals() {
+  const container = document.getElementById('ritualsContainer');
+  container.innerHTML = '<div class="loading" style="padding:16px">Loading... 🌱</div>';
+
+  const { data } = await supa.from('grove_completions').select('activity_key, activity_label, activity_emoji');
+  if (!data || data.length === 0) { container.innerHTML = '<div style="color:var(--soft);font-size:13px;padding:8px 0">No rituals completed yet 🌱</div>'; return; }
+
+  // Count by key
+  const counts = {};
+  data.forEach(d => {
+    const key = d.activity_key;
+    if (!counts[key]) counts[key] = { label: d.activity_label, emoji: d.activity_emoji, count: 0 };
+    counts[key].count++;
+  });
+
+  const sorted = Object.values(counts).sort((a,b) => b.count - a.count).slice(0, 10);
+  const max = sorted[0]?.count || 1;
+
+  container.innerHTML = '';
+  sorted.forEach((r, i) => {
+    const pct = Math.round((r.count / max) * 100);
+    const div = document.createElement('div');
+    div.className = 'ritual-row';
+    div.style.animationDelay = `${i * 0.05}s`;
+    div.innerHTML = `
+      <div class="ritual-name">
+        <span>${r.emoji || '🌿'} ${r.label}</span>
+        <span>${r.count} time${r.count !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="ritual-bar">
+        <div class="ritual-fill" style="width:0%" data-pct="${pct}"></div>
+      </div>`;
+    container.appendChild(div);
+    // Animate bars
+    setTimeout(() => { div.querySelector('.ritual-fill').style.width = pct + '%'; }, 100 + i * 50);
+  });
+}
+
+async function sendAnnouncement() {
+  const text = document.getElementById('announceText').value.trim();
+  const successEl = document.getElementById('announceSuccess');
+  successEl.textContent = '';
+  if (!text) { showToast('Please write a message first 🌿'); return; }
+
+  // Save to a grove_announcements table
+  const { error } = await supa.from('grove_announcements').insert({ message: text, sent_at: new Date().toISOString() });
+  if (error) {
+    // Table might not exist yet — create it first
+    showToast('Setting up announcements... try again in a moment 🌿');
+    await supa.rpc('create_announcements_table').catch(() => {});
+    return;
+  }
+
+  document.getElementById('announceText').value = '';
+  successEl.textContent = '✦ Sent to your grove community with love 🌿';
+  showToast('Announcement sent! 🌸');
+  setTimeout(() => { successEl.textContent = ''; }, 4000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Check existing session
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supa.auth.getSession();
+  if (session?.user) {
+    const { data: profile } = await supa.from('grove_profiles').select('is_admin').eq('id', session.user.id).single();
+    if (profile?.is_admin) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminApp').style.display = 'block';
+      loadDashboard();
+    }
+  }
+});
+</script>
+</body>
+</html>

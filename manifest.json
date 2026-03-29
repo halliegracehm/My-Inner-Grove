@@ -1,0 +1,26 @@
+{
+  "name": "My Inner Grove",
+  "short_name": "My Grove",
+  "description": "A magical place that grows with you. Come as you are. Leave feeling whole.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a2e1a",
+  "theme_color": "#1a2e1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "health", "wellness"],
+  "screenshots": []
+}

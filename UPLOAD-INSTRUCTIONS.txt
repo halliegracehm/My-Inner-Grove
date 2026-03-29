@@ -1,0 +1,56 @@
+# My Inner Grove — Upload Instructions
+## Files in this folder:
+- index.html — the app
+- manifest.json — makes it installable as a PWA
+- sw.js — service worker (offline support)
+- icon-192.png — app icon (small)
+- icon-512.png — app icon (large)
+- icon.svg — app icon (vector)
+
+---
+
+## How to upload to halliewho.com (WordPress)
+
+### Step 1 — Install a File Manager plugin
+1. Go to your WordPress dashboard
+2. Plugins → Add New → search "File Manager" 
+3. Install **WP File Manager** (free) → Activate
+
+### Step 2 — Upload the grove folder
+1. In WordPress dashboard go to WP File Manager
+2. Navigate to your **public_html** folder (or **wp-content/uploads** works too)
+3. Create a new folder called **grove**
+4. Upload ALL files from this folder into it:
+   - index.html
+   - manifest.json
+   - sw.js
+   - icon-192.png
+   - icon-512.png
+
+### Step 3 — Visit your app!
+Go to: **https://halliewho.com/grove/**
+
+That's it! 🌿
+
+---
+
+## How to install on your iPhone
+1. Open Safari and go to halliewho.com/grove
+2. Tap the **Share** button (box with arrow)
+3. Scroll down and tap **Add to Home Screen**
+4. Name it "My Inner Grove" → tap Add
+5. It now lives on your home screen like a real app ✨
+
+---
+
+## For the App Store (when ready)
+1. Go to median.co
+2. Create new app → enter URL: https://halliewho.com/grove/
+3. Follow their submission process (same as My Inner Mind)
+
+---
+
+## Troubleshooting
+- If the app looks broken, make sure ALL files are in the same folder
+- The sw.js path in index.html assumes the folder is called "grove" at the root
+- If you put it in a different folder, update the path in sw.js (line 4) and index.html (bottom of JS)
