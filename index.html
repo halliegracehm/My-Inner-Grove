@@ -9,306 +9,623 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="My Inner Grove">
-<meta name="theme-color" content="#1a2e1a">
+<meta name="theme-color" content="#0d1a0d">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel+Decorative:wght@400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --deep: #080f08;
-  --forest: #0f1a0f;
-  --mid: #1a2e1a;
-  --green: #2d4a2d;
-  --moss: #4a7a3a;
-  --sage: #7aaa5a;
-  --leaf: #a8c887;
-  --gold: #d4a843;
-  --amber: #c47c2a;
-  --cream: #f5f0e8;
-  --soft: #c8b896;
-  --muted: rgba(200,184,150,0.45);
-  --purple: #c8a8f0;
-  --teal: #9accd4;
-  --rose: #e8a8a0;
+  --deep:    #04080a;
+  --forest:  #0a1510;
+  --mid:     #112018;
+  --green:   #1e3a26;
+  --moss:    #3d6b45;
+  --sage:    #6aab72;
+  --leaf:    #a8d4a0;
+  --gold:    #d4a843;
+  --amber:   #c47c2a;
+  --dusk:    #c8845a;
+  --cream:   #f2ece0;
+  --soft:    #c8b896;
+  --muted:   rgba(200,184,150,0.4);
+  --purple:  #b8a0e8;
+  --teal:    #7abcc4;
+  --rose:    #e0a0a8;
+  --moon:    #ffe8a0;
+  --glow-g:  rgba(106,171,114,0.18);
+  --glow-g2: rgba(212,168,67,0.12);
+  --r: 20px;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box;}
 
+/* ══ BODY & ATMOSPHERE ══ */
 body {
-  font-family: 'Jost', sans-serif;
-  min-height: 100vh;
-  color: var(--cream);
-  overflow-x: hidden;
-  position: relative;
-  background: #050a05;
+  font-family:'Jost',sans-serif;
+  min-height:100vh;
+  color:var(--cream);
+  background:#04080a;
+  overflow-x:hidden;
+  position:relative;
 }
 body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 100% 50% at 50% 0%, rgba(15,30,12,0.95) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 40% at 10% 50%, rgba(20,40,15,0.4) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 40% at 90% 60%, rgba(15,35,12,0.3) 0%, transparent 60%),
-    linear-gradient(180deg, #030603 0%, #060c06 30%, #080f08 60%, #060c06 100%);
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(10,22,15,0.98) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 5% 40%, rgba(20,45,25,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 55%, rgba(15,38,22,0.28) 0%, transparent 55%),
+    linear-gradient(180deg,#020604 0%,#050e07 25%,#08120a 55%,#060e08 100%);
 }
+
+/* Subtle grain overlay — pinterest editorial texture */
 body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    radial-gradient(circle, rgba(212,240,122,0.1) 1px, transparent 1px),
-    radial-gradient(circle, rgba(168,200,135,0.07) 1px, transparent 1px),
-    radial-gradient(circle, rgba(212,168,67,0.05) 1px, transparent 1px);
-  background-size: 130px 130px, 220px 220px, 90px 90px;
-  background-position: 0 0, 65px 65px, 32px 95px;
-  animation: particleDrift 20s ease-in-out infinite;
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:200px 200px;
+  mix-blend-mode:overlay;
+  opacity:0.6;
+}
+
+/* floating ambient particles */
+.bg-particles {
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.bg-particle {
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle,var(--c,rgba(106,171,114,0.08)) 0%,transparent 70%);
+  animation:particleDrift var(--d,25s) ease-in-out infinite var(--delay,0s);
 }
 @keyframes particleDrift {
-  0%,100%{transform:translateY(0);opacity:1}
-  50%{transform:translateY(-8px);opacity:0.6}
+  0%,100%{transform:translate(0,0) scale(1);opacity:0.5;}
+  33%{transform:translate(var(--dx,20px),var(--dy,-30px)) scale(1.1);opacity:0.8;}
+  66%{transform:translate(var(--dx2,-15px),var(--dy2,-15px)) scale(0.9);opacity:0.4;}
 }
 
-.screen { display:none; min-height:100vh; flex-direction:column; position:relative; z-index:1; }
-.screen.active { display:flex; }
+.screen{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
+.screen.active{display:flex;}
 
-/* WELCOME */
+/* ══ WELCOME ══ */
 #welcome {
-  background:transparent; align-items:center; justify-content:center;
-  text-align:center; padding:40px 28px; position:relative; overflow:hidden;
+  background:transparent;align-items:center;justify-content:center;
+  text-align:center;padding:40px 28px;overflow:hidden;position:relative;
 }
 #welcome::before {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(180deg,#010603 0%,#030a03 30%,#071207 55%,#122008 80%,#0a1506 100%);
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,#010503 0%,#030a04 25%,#071409 50%,#142a12 80%,#0e1e0c 100%);
 }
+
+/* Stars */
 .stars-wrap,.flies-wrap{position:absolute;inset:0;pointer-events:none;z-index:0;}
-.star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);opacity:var(--o,0.6);}
-@keyframes twinkle{0%,100%{opacity:var(--o,.6);transform:scale(1)}50%{opacity:.1;transform:scale(.5)}}
-.fly{position:absolute;width:4px;height:4px;background:#d4f07a;border-radius:50%;box-shadow:0 0 6px #d4f07a,0 0 12px #a8d448;animation:flyMove var(--fd,5s) ease-in-out infinite var(--fdelay,0s),flyBlink var(--fb,2s) ease-in-out infinite var(--fdelay,0s);}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);opacity:var(--o,0.5);}
+@keyframes twinkle{0%,100%{opacity:var(--o,.5);transform:scale(1)}50%{opacity:.05;transform:scale(.4)}}
+
+/* Fireflies */
+.fly{position:absolute;width:3px;height:3px;border-radius:50%;box-shadow:0 0 5px #d4f07a,0 0 10px #a8d448,0 0 20px rgba(168,212,72,0.4);animation:flyMove var(--fd,5s) ease-in-out infinite var(--fdelay,0s),flyBlink var(--fb,2s) ease-in-out infinite var(--fdelay,0s);}
+.fly::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle,rgba(212,240,122,0.3) 0%,transparent 70%);}
 @keyframes flyMove{0%{transform:translate(0,0)}25%{transform:translate(var(--x1,20px),var(--y1,-30px))}50%{transform:translate(var(--x2,-15px),var(--y2,-60px))}75%{transform:translate(var(--x3,30px),var(--y3,-40px))}100%{transform:translate(0,0)}}
-@keyframes flyBlink{0%,100%{opacity:.9}50%{opacity:.1}}
-.silhouette{position:absolute;bottom:0;left:0;right:0;height:160px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 160'%3E%3Cpath d='M0,160 L0,110 L20,110 L20,75 L40,75 L40,45 L55,45 L55,20 L65,20 L65,5 L75,5 L75,20 L85,20 L85,45 L100,45 L100,35 L112,35 L112,15 L122,15 L122,35 L135,35 L135,55 L148,55 L148,25 L160,25 L160,8 L170,8 L170,0 L180,0 L180,8 L190,8 L190,25 L202,25 L202,45 L215,45 L215,30 L228,30 L228,12 L238,12 L238,30 L250,30 L250,50 L262,50 L262,35 L275,35 L275,15 L285,15 L285,35 L298,35 L298,55 L310,55 L310,35 L322,35 L322,15 L332,15 L332,5 L342,5 L342,15 L352,15 L352,35 L365,35 L365,55 L378,55 L378,75 L390,75 L390,95 L400,95 L400,160 Z' fill='%23010603'/%3E%3C/svg%3E") no-repeat bottom center/cover;z-index:1;}
-.welcome-content{position:relative;z-index:2;max-width:320px;}
-.w-moon{font-size:54px;margin-bottom:12px;animation:glow 4s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(212,168,67,.5));}
-@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px rgba(212,168,67,.5))}50%{filter:drop-shadow(0 0 40px rgba(212,168,67,.9))}}
-.w-title{font-family:'Playfair Display',serif;font-size:46px;font-weight:400;color:var(--cream);line-height:1.1;margin-bottom:8px;text-shadow:0 0 40px rgba(212,168,67,.3);}
-.w-title em{font-style:italic;color:var(--gold);}
-.w-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--soft);line-height:1.7;margin-bottom:36px;}
-.w-btn{background:transparent;color:var(--gold);border:1.5px solid var(--gold);padding:14px 44px;border-radius:50px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .4s;box-shadow:0 0 20px rgba(212,168,67,.2);}
-.w-btn:hover{background:var(--gold);color:var(--deep);box-shadow:0 0 40px rgba(212,168,67,.5);}
-.w-creatures{display:flex;justify-content:center;gap:20px;margin-top:44px;font-size:26px;}
-.w-creatures span{animation:bob 4s ease-in-out infinite;}
-.w-creatures span:nth-child(2){animation-delay:.7s}
-.w-creatures span:nth-child(3){animation-delay:1.4s}
-.w-creatures span:nth-child(4){animation-delay:2.1s}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes flyBlink{0%,100%{opacity:.9}45%,55%{opacity:.05}}
 
-/* AUTH */
-#authscreen{background:transparent;align-items:center;justify-content:center;padding:40px 24px;}
-.auth-card{background:rgba(5,10,5,0.92);border:1px solid rgba(90,140,70,.2);border-radius:28px;padding:40px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 80px rgba(10,25,8,.8),inset 0 1px 0 rgba(150,200,100,.07);backdrop-filter:blur(20px);}
-.auth-card h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--cream);margin-bottom:6px;}
-.auth-card p{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:var(--soft);margin-bottom:24px;line-height:1.7;}
+/* Silhouette treeline at bottom of welcome */
+.silhouette{
+  position:absolute;bottom:0;left:0;right:0;height:220px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 220'%3E%3Cpath d='M0,220 L0,170 L20,170 L20,140 L30,140 L30,110 L45,110 L45,80 L58,80 L58,55 L68,55 L68,35 L78,35 L78,20 L88,20 L88,10 L98,10 L98,0 L108,0 L108,10 L118,10 L118,25 L128,25 L128,45 L140,45 L140,35 L155,35 L155,18 L167,18 L167,5 L177,5 L177,18 L192,18 L192,38 L205,38 L205,55 L218,55 L218,38 L232,38 L232,20 L244,20 L244,8 L254,8 L254,0 L264,0 L264,8 L274,8 L274,22 L288,22 L288,42 L300,42 L300,28 L315,28 L315,12 L328,12 L328,0 L338,0 L338,12 L350,12 L350,28 L364,28 L364,45 L376,45 L376,28 L390,28 L390,10 L402,10 L402,0 L412,0 L412,10 L424,10 L424,28 L436,28 L436,45 L450,45 L450,30 L464,30 L464,14 L476,14 L476,2 L486,2 L486,14 L498,14 L498,32 L512,32 L512,50 L524,50 L524,35 L538,35 L538,18 L550,18 L550,5 L560,5 L560,18 L574,18 L574,38 L586,38 L586,55 L598,55 L598,38 L612,38 L612,20 L624,20 L624,8 L634,8 L634,20 L648,20 L648,42 L660,42 L660,58 L672,58 L672,45 L685,45 L685,28 L695,28 L695,15 L705,15 L705,5 L715,5 L715,15 L728,15 L728,35 L742,35 L742,55 L756,55 L756,80 L770,80 L770,110 L782,110 L782,140 L800,140 L800,220 Z' fill='%23010503'/%3E%3C/svg%3E") no-repeat bottom center/cover;
+  z-index:2;
+}
+
+.welcome-content{position:relative;z-index:3;max-width:340px;}
+.w-moon{font-size:56px;margin-bottom:14px;display:block;filter:drop-shadow(0 0 30px rgba(255,232,160,0.6));animation:moonGlow 4s ease-in-out infinite;}
+@keyframes moonGlow{0%,100%{filter:drop-shadow(0 0 20px rgba(255,232,160,0.4)) drop-shadow(0 0 60px rgba(212,168,67,0.2));}50%{filter:drop-shadow(0 0 40px rgba(255,232,160,0.8)) drop-shadow(0 0 80px rgba(212,168,67,0.4));}}
+
+.w-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:38px;font-weight:400;
+  color:var(--cream);line-height:1.15;
+  margin-bottom:10px;
+  text-shadow:0 0 60px rgba(212,168,67,0.25),0 2px 40px rgba(0,0,0,0.8);
+  letter-spacing:1px;
+}
+.w-title span{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:var(--gold);letter-spacing:3px;margin-top:4px;}
+.w-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:17px;color:var(--soft);line-height:1.8;
+  margin-bottom:38px;letter-spacing:0.3px;
+}
+.w-btn{
+  background:transparent;color:var(--gold);
+  border:1px solid rgba(212,168,67,0.5);
+  padding:15px 48px;border-radius:50px;
+  font-family:'Jost',sans-serif;font-size:11px;
+  letter-spacing:4px;text-transform:uppercase;
+  cursor:pointer;transition:all .4s;
+  box-shadow:0 0 30px rgba(212,168,67,0.08),inset 0 1px 0 rgba(212,168,67,0.1);
+  position:relative;overflow:hidden;
+}
+.w-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(212,168,67,0.15),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.w-btn:hover::before{opacity:1;}
+.w-btn:hover{border-color:rgba(212,168,67,0.8);box-shadow:0 0 50px rgba(212,168,67,0.25),inset 0 1px 0 rgba(212,168,67,0.2);}
+
+.w-ornament{
+  display:flex;justify-content:center;align-items:center;gap:16px;
+  margin:38px 0 0;color:var(--soft);font-size:13px;letter-spacing:2px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+}
+.w-ornament span{font-size:22px;animation:bob 4s ease-in-out infinite;}
+.w-ornament span:nth-child(2){animation-delay:.6s;}
+.w-ornament span:nth-child(3){animation-delay:1.2s;}
+.w-ornament span:nth-child(4){animation-delay:1.8s;}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* ══ AUTH ══ */
+#authscreen{background:transparent;align-items:center;justify-content:center;padding:40px 24px;
+  background:linear-gradient(180deg,#040a05 0%,#0e1e10 100%);}
+.auth-card{
+  background:rgba(4,8,5,0.94);
+  border:1px solid rgba(106,171,114,0.15);
+  border-radius:28px;padding:44px 32px;
+  max-width:360px;width:100%;text-align:center;
+  box-shadow:0 0 100px rgba(8,20,10,0.9),0 0 40px rgba(106,171,114,0.05),inset 0 1px 0 rgba(150,200,100,0.06);
+  backdrop-filter:blur(24px);position:relative;overflow:hidden;
+}
+.auth-card::before{
+  content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(106,171,114,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.auth-card h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--cream);margin-bottom:6px;}
+.auth-card p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--soft);margin-bottom:28px;line-height:1.7;}
 .auth-tabs{display:flex;gap:8px;margin-bottom:24px;}
-.auth-tab{flex:1;padding:9px;border-radius:12px;font-size:13px;cursor:pointer;border:1px solid rgba(90,140,70,.15);background:rgba(8,15,8,.6);color:var(--soft);transition:all .2s;font-family:'Jost',sans-serif;letter-spacing:.5px;}
-.auth-tab.active{background:rgba(212,168,67,.15);color:var(--gold);border-color:rgba(212,168,67,.4);}
-.auth-input{width:100%;padding:13px 16px;margin-bottom:12px;background:rgba(8,15,8,.7);border:1px solid rgba(90,140,70,.2);border-radius:14px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:all .2s;}
-.auth-input:focus{border-color:rgba(212,168,67,.5);box-shadow:0 0 12px rgba(212,168,67,.08);}
-.auth-input::placeholder{color:rgba(200,184,150,.3);}
-.auth-btn{width:100%;padding:14px;background:transparent;color:var(--gold);border:1.5px solid var(--gold);border-radius:50px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:4px;}
-.auth-btn:hover{background:var(--gold);color:var(--deep);}
-.auth-error{font-size:12px;color:#f08080;margin-top:10px;min-height:16px;}
+.auth-tab{flex:1;padding:10px;border-radius:12px;font-size:12px;cursor:pointer;border:1px solid rgba(106,171,114,0.12);background:rgba(8,15,8,0.6);color:var(--soft);transition:all .2s;font-family:'Jost',sans-serif;letter-spacing:.8px;text-transform:uppercase;}
+.auth-tab.active{background:rgba(212,168,67,0.1);color:var(--gold);border-color:rgba(212,168,67,0.35);}
+.auth-input{width:100%;padding:14px 18px;margin-bottom:12px;background:rgba(8,15,8,0.7);border:1px solid rgba(106,171,114,0.18);border-radius:14px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:all .25s;letter-spacing:0.3px;}
+.auth-input:focus{border-color:rgba(212,168,67,0.45);box-shadow:0 0 0 3px rgba(212,168,67,0.05);}
+.auth-input::placeholder{color:rgba(200,184,150,0.25);}
+.auth-btn{width:100%;padding:15px;background:transparent;color:var(--gold);border:1px solid rgba(212,168,67,0.5);border-radius:50px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:6px;}
+.auth-btn:hover{background:rgba(212,168,67,0.08);border-color:var(--gold);box-shadow:0 0 20px rgba(212,168,67,0.1);}
+.auth-error{font-size:12px;color:#f08080;margin-top:12px;min-height:16px;font-family:'Cormorant Garamond',serif;font-style:italic;}
 
-/* APP */
-#app{background:transparent;padding-bottom:88px;position:relative;z-index:1;}
-.topbar{padding:18px 20px 10px;position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;}
-.topbar-greeting{font-family:'Playfair Display',serif;font-size:19px;color:var(--cream);}
+/* ══ APP SHELL ══ */
+#app{background:transparent;padding-bottom:100px;position:relative;z-index:1;}
+
+/* Topbar — editorial header */
+.topbar{
+  padding:20px 20px 12px;
+  position:relative;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.topbar-left{}
+.topbar-greeting{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;
+  color:var(--cream);line-height:1.2;
+}
 .topbar-greeting em{font-style:italic;color:var(--gold);}
-.streak-badge{background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.22);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--gold);display:flex;align-items:center;gap:4px;box-shadow:0 0 12px rgba(212,168,67,.08);}
+.topbar-date{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-family:'Jost',sans-serif;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.streak-badge{
+  background:rgba(212,168,67,0.07);
+  border:1px solid rgba(212,168,67,0.2);
+  border-radius:20px;padding:6px 14px;
+  font-size:12px;color:var(--gold);
+  display:flex;align-items:center;gap:5px;
+  font-family:'Jost',sans-serif;letter-spacing:.5px;
+}
 
-/* GROVE SCENE — no border radius bottom so it bleeds into content */
-.grove-scene{margin:8px 16px 0;border-radius:20px 20px 0 0;overflow:hidden;position:relative;height:210px;box-shadow:0 -4px 30px rgba(0,0,0,.4);}
+/* ══ GROVE SCENE — the heart of it ══ */
+.grove-wrap{
+  margin:6px 14px 0;
+  border-radius:24px 24px 0 0;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 -8px 40px rgba(0,0,0,0.5),inset 0 0 0 1px rgba(106,171,114,0.1);
+}
+.grove-scene{
+  position:relative;
+  height:260px;
+  overflow:hidden;
+}
 .grove-svg-wrap{position:absolute;inset:0;width:100%;height:100%;}
-.grove-svg-wrap svg{width:100%;height:100%;}
+.grove-svg-wrap svg{width:100%;height:100%;display:block;}
+.scene-overlay-top{
+  position:absolute;top:0;left:0;right:0;height:50px;
+  background:linear-gradient(180deg,rgba(4,8,5,0.6) 0%,transparent 100%);
+  pointer-events:none;z-index:5;
+}
+.scene-meta{position:absolute;top:12px;left:14px;display:flex;gap:6px;z-index:8;}
+.meta-pill{
+  background:rgba(0,0,0,0.55);border:1px solid rgba(140,190,100,0.15);
+  border-radius:20px;padding:4px 12px;font-size:10px;color:var(--soft);
+  letter-spacing:1.5px;text-transform:uppercase;backdrop-filter:blur(12px);
+  font-family:'Jost',sans-serif;
+}
+.scene-flies-wrap{position:absolute;inset:0;pointer-events:none;z-index:6;}
+.sound-btn{
+  position:absolute;bottom:12px;right:14px;
+  background:rgba(0,0,0,0.6);border:1px solid rgba(140,190,100,0.2);
+  border-radius:20px;padding:5px 14px;font-size:11px;color:var(--soft);
+  cursor:pointer;z-index:9;transition:all .25s;backdrop-filter:blur(12px);
+  font-family:'Jost',sans-serif;letter-spacing:1px;
+}
+.sound-btn:hover,.sound-btn.playing{border-color:rgba(212,168,67,0.4);color:var(--gold);}
 
-/* Seamless wavy transition from scene to content */
-.grove-scene-fade{height:36px;margin:0 16px;position:relative;z-index:2;overflow:hidden;}
-.grove-scene-fade svg{width:100%;height:100%;display:block;}
+/* Moon phase display */
+.moon-phase{
+  position:absolute;top:12px;right:14px;z-index:8;
+  text-align:center;
+}
+.moon-phase-icon{font-size:20px;filter:drop-shadow(0 0 8px rgba(255,232,160,0.5));}
+.moon-phase-label{font-size:8px;color:var(--moon);letter-spacing:1.5px;text-transform:uppercase;font-family:'Jost',sans-serif;margin-top:1px;opacity:0.7;}
 
-.scene-meta{position:absolute;top:10px;left:14px;display:flex;gap:6px;z-index:6;}
-.meta-pill{background:rgba(0,0,0,.55);border:1px solid rgba(140,190,100,.15);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--soft);letter-spacing:1px;backdrop-filter:blur(8px);}
-.scene-flies-wrap{position:absolute;inset:0;pointer-events:none;z-index:5;}
-.scene-empty{position:absolute;bottom:50px;left:0;right:0;text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:12px;color:rgba(200,184,150,.5);z-index:6;padding:0 20px;}
-@keyframes sway{0%,100%{transform-origin:bottom center;transform:rotate(-1.5deg)}50%{transform-origin:bottom center;transform:rotate(1.5deg)}}
-@keyframes treeIn{0%{transform:scaleY(0);transform-origin:bottom center;opacity:0}100%{transform:scaleY(1);transform-origin:bottom center;opacity:1}}
-@keyframes creatureFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.scene-creature{position:absolute;font-size:18px;z-index:6;animation:creatureFloat 4s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(212,168,67,.5));}
+/* Scene creature companion */
+.scene-creature{position:absolute;font-size:20px;z-index:7;cursor:pointer;}
+.scene-creature.floating{animation:creatureFloat 5s ease-in-out infinite;}
+.scene-creature.hovering{animation:creatureHover 3s ease-in-out infinite;}
+@keyframes creatureFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes creatureHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
-/* Progress seamlessly attached to scene bottom */
-.grove-progress{padding:8px 20px 10px;position:relative;z-index:2;background:rgba(5,10,5,0.9);margin:0 16px;border-radius:0 0 16px 16px;border:1px solid rgba(90,140,70,.12);border-top:none;box-shadow:0 4px 20px rgba(0,0,0,.3);}
-.progress-track{height:3px;background:rgba(140,190,100,.1);border-radius:3px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--moss) 0%,var(--gold) 100%);border-radius:3px;transition:width 1s ease;box-shadow:0 0 8px rgba(212,168,67,.35);}
-.progress-label{font-size:10px;color:var(--muted);margin-top:5px;text-align:center;letter-spacing:1px;}
+/* Companion speech bubble */
+.companion-bubble{
+  position:absolute;background:rgba(4,8,5,0.94);
+  border:1px solid rgba(212,168,67,0.3);border-radius:16px;
+  padding:8px 14px;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--cream);line-height:1.5;
+  z-index:10;max-width:180px;text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  animation:bubbleIn .3s ease;pointer-events:none;
+}
+@keyframes bubbleIn{from{opacity:0;transform:scale(0.8) translateY(5px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.companion-bubble::after{content:'▼';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(212,168,67,0.3);}
 
-.sound-btn{position:absolute;bottom:10px;right:14px;background:rgba(0,0,0,.55);border:1px solid rgba(140,190,100,.18);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--soft);cursor:pointer;z-index:7;transition:all .2s;backdrop-filter:blur(8px);}
-.sound-btn:hover{border-color:rgba(212,168,67,.4);color:var(--gold);}
-.sound-btn.playing{color:var(--gold);border-color:rgba(212,168,67,.3);}
+/* Wavy blend from scene into content */
+.grove-wave{
+  margin:0 14px;position:relative;z-index:4;overflow:hidden;
+  background:rgba(6,12,7,0.95);
+}
+.grove-wave svg{display:block;width:100%;height:32px;margin-top:-1px;}
 
-/* TABS */
-.tabs{display:flex;gap:6px;padding:14px 16px 10px;overflow-x:auto;scrollbar-width:none;position:relative;z-index:2;}
+/* Progress bar — seamlessly joined */
+.grove-progress{
+  margin:0 14px;padding:10px 20px 12px;
+  background:rgba(6,12,7,0.95);
+  border-radius:0 0 20px 20px;
+  border:1px solid rgba(106,171,114,0.1);border-top:none;
+  box-shadow:0 6px 24px rgba(0,0,0,0.35);
+}
+.progress-track{height:2px;background:rgba(140,190,100,0.08);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--moss) 0%,var(--sage) 60%,var(--gold) 100%);border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(106,171,114,0.5);}
+.progress-label{font-size:10px;color:var(--muted);margin-top:7px;text-align:center;letter-spacing:2px;text-transform:uppercase;font-family:'Jost',sans-serif;}
+
+/* ══ TABS — editorial pill style ══ */
+.tabs{
+  display:flex;gap:8px;padding:16px 14px 10px;
+  overflow-x:auto;scrollbar-width:none;position:relative;z-index:2;
+}
 .tabs::-webkit-scrollbar{display:none;}
-.tab{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:12px;letter-spacing:.5px;cursor:pointer;border:1px solid transparent;transition:all .25s;white-space:nowrap;backdrop-filter:blur(8px);}
-.tab.active{background:rgba(212,168,67,.1);color:var(--gold);border-color:rgba(212,168,67,.3);box-shadow:0 0 16px rgba(212,168,67,.08),inset 0 1px 0 rgba(212,168,67,.08);}
-.tab:not(.active){color:var(--soft);border-color:rgba(90,140,70,.12);background:rgba(5,10,5,.7);}
-.tab:not(.active):hover{border-color:rgba(212,168,67,.2);color:var(--cream);}
+.tab{
+  flex-shrink:0;padding:9px 18px;border-radius:50px;
+  font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;border:1px solid transparent;
+  transition:all .25s;white-space:nowrap;
+  font-family:'Jost',sans-serif;font-weight:500;
+}
+.tab.active{
+  background:rgba(212,168,67,0.09);color:var(--gold);
+  border-color:rgba(212,168,67,0.28);
+  box-shadow:0 0 20px rgba(212,168,67,0.07),inset 0 1px 0 rgba(212,168,67,0.07);
+}
+.tab:not(.active){color:var(--soft);border-color:rgba(106,171,114,0.1);background:rgba(6,12,7,0.7);}
+.tab:not(.active):hover{border-color:rgba(212,168,67,0.2);color:var(--cream);}
 
-/* PANELS */
-.panel{display:none;padding:0 16px;position:relative;z-index:2;}
+/* ══ PANELS ══ */
+.panel{display:none;padding:0 14px;position:relative;z-index:2;}
 .panel.active{display:block;}
 
-/* ACTIVITY CARDS — forest scroll aesthetic */
-.activity-item{
-  background:rgba(6,12,6,0.88);
-  border:1px solid rgba(90,140,70,.15);
-  border-radius:16px;padding:14px 16px;
-  display:flex;align-items:center;gap:14px;
-  cursor:pointer;transition:all .22s;position:relative;overflow:hidden;
+/* ══ MOOD CHECK-IN ══ */
+.mood-section{
+  margin-bottom:18px;padding:18px 20px;
+  background:rgba(6,12,7,0.88);
+  border:1px solid rgba(106,171,114,0.12);border-radius:var(--r);
   backdrop-filter:blur(12px);
-  box-shadow:0 2px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(140,190,100,.05);
 }
-.activity-item::before{content:'';position:absolute;top:0;right:0;width:80px;height:100%;background:radial-gradient(ellipse at top right,rgba(90,140,70,.05) 0%,transparent 70%);pointer-events:none;}
-.activity-item:hover{border-color:rgba(212,168,67,.25);background:rgba(10,18,10,.92);box-shadow:0 4px 24px rgba(0,0,0,.35),0 0 16px rgba(212,168,67,.05);}
-.activity-item.completed{background:rgba(212,168,67,.05);border-color:rgba(212,168,67,.18);opacity:.75;cursor:default;}
-.activity-item.locked{opacity:.3;cursor:not-allowed;}
-.activity-emoji{font-size:26px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(212,168,67,.15));}
+.mood-label{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:16px;color:var(--soft);margin-bottom:14px;text-align:center;
+}
+.mood-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+.mood-btn{
+  background:rgba(6,12,7,0.85);border:1px solid rgba(106,171,114,0.15);
+  border-radius:50px;padding:8px 16px;font-size:13px;color:var(--soft);
+  cursor:pointer;transition:all .2s;font-family:'Jost',sans-serif;
+  backdrop-filter:blur(8px);white-space:nowrap;
+}
+.mood-btn:hover{border-color:rgba(212,168,67,0.3);color:var(--cream);}
+.mood-btn.selected{background:rgba(212,168,67,0.08);border-color:rgba(212,168,67,0.4);color:var(--gold);box-shadow:0 0 16px rgba(212,168,67,0.08);}
+.mood-response{
+  display:none;margin-top:14px;padding:12px 16px;
+  background:rgba(212,168,67,0.05);border:1px solid rgba(212,168,67,0.12);
+  border-radius:14px;text-align:center;
+}
+.mood-response-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--cream);line-height:1.6;}
+
+/* ══ GROVE MESSAGE / COMPANION ══ */
+.grove-msg{
+  margin-bottom:16px;padding:16px 20px;
+  background:rgba(168,200,135,0.05);border:1px solid rgba(168,200,135,0.18);
+  border-radius:var(--r);text-align:center;animation:fadeUp .5s ease;
+}
+.grove-msg-emoji{font-size:22px;margin-bottom:6px;}
+.grove-msg-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--leaf);line-height:1.65;}
+
+/* Milestone banner */
+.milestone-banner{
+  display:none;margin-bottom:16px;padding:20px 22px;
+  background:linear-gradient(135deg,rgba(212,168,67,0.09) 0%,rgba(168,200,135,0.08) 100%);
+  border:1px solid rgba(212,168,67,0.22);border-radius:var(--r);
+  text-align:center;animation:fadeUp .5s ease;
+}
+.milestone-emoji{font-size:36px;margin-bottom:10px;}
+.milestone-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold);margin-bottom:5px;font-weight:600;}
+.milestone-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--soft);}
+
+/* ══ ACTIVITY CARDS — pinterest card style ══ */
+.activities-section{margin-bottom:6px;}
+.category-label{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);margin:18px 0 10px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.category-label::before,.category-label::after{content:'';flex:1;height:1px;background:rgba(106,171,114,0.1);}
+
+.activity-item{
+  background:rgba(6,12,7,0.9);
+  border:1px solid rgba(106,171,114,0.12);
+  border-radius:var(--r);padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .22s;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);
+  box-shadow:0 2px 16px rgba(0,0,0,0.28),inset 0 1px 0 rgba(140,190,100,0.04);
+  margin-bottom:8px;
+}
+.activity-item::before{
+  content:'';position:absolute;top:0;right:0;width:100px;height:100%;
+  background:radial-gradient(ellipse at top right,rgba(106,171,114,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.activity-item:hover{border-color:rgba(212,168,67,0.22);background:rgba(10,18,10,0.94);}
+.activity-item.completed{background:rgba(212,168,67,0.04);border-color:rgba(212,168,67,0.15);opacity:.65;cursor:default;}
+.activity-item.selected{border-color:rgba(106,171,114,0.38);background:rgba(10,20,10,0.94);box-shadow:0 0 20px rgba(106,171,114,0.07);}
+.activity-emoji{font-size:28px;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(212,168,67,0.12));}
 .activity-info{flex:1;}
-.activity-name{font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);margin-bottom:3px;}
-.activity-desc{font-size:12px;color:var(--soft);line-height:1.5;}
-.activity-check{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(140,190,100,.22);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .3s;flex-shrink:0;}
-.activity-item.completed .activity-check{background:var(--gold);border-color:var(--gold);color:var(--deep);box-shadow:0 0 8px rgba(212,168,67,.35);}
-.activity-item.selected{border-color:rgba(122,170,90,.4);background:rgba(8,16,8,.92);box-shadow:0 0 16px rgba(122,170,90,.08);}
-.activity-item.selected .activity-check{background:var(--sage);border-color:var(--sage);color:var(--deep);}
+.activity-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--cream);margin-bottom:3px;font-weight:400;}
+.activity-desc{font-size:12px;color:var(--soft);line-height:1.55;font-family:'Jost',sans-serif;font-weight:300;}
+.activity-check{
+  width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(140,190,100,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;transition:all .3s;flex-shrink:0;
+}
+.activity-item.completed .activity-check{background:var(--gold);border-color:var(--gold);color:var(--deep);box-shadow:0 0 12px rgba(212,168,67,0.4);}
+.activity-item.selected .activity-check{background:var(--moss);border-color:var(--moss);color:var(--deep);}
 
-.complete-btn{width:100%;padding:15px;margin-top:16px;background:linear-gradient(135deg,var(--amber) 0%,var(--gold) 100%);color:var(--deep);border:none;border-radius:50px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;box-shadow:0 6px 24px rgba(212,168,67,.2),0 0 0 1px rgba(212,168,67,.15);font-weight:500;}
-.complete-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(212,168,67,.3);}
-.complete-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;background:rgba(212,168,67,.25);}
-.all-done-msg{text-align:center;padding:32px 20px;font-family:'Playfair Display',serif;font-style:italic;color:var(--soft);font-size:16px;line-height:1.8;}
-.all-done-msg span{font-size:36px;display:block;margin-bottom:12px;}
+.complete-btn{
+  width:100%;padding:16px;margin-top:20px;
+  background:linear-gradient(135deg,var(--amber) 0%,var(--gold) 100%);
+  color:var(--deep);border:none;border-radius:50px;
+  font-family:'Jost',sans-serif;font-size:11px;letter-spacing:3px;
+  text-transform:uppercase;cursor:pointer;transition:all .3s;font-weight:600;
+  box-shadow:0 6px 24px rgba(212,168,67,0.2),0 0 0 1px rgba(212,168,67,0.12);
+}
+.complete-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 32px rgba(212,168,67,0.3);}
+.complete-btn:disabled{opacity:.3;cursor:not-allowed;background:rgba(212,168,67,0.25);}
+.all-done-msg{
+  text-align:center;padding:36px 24px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  color:var(--soft);font-size:18px;line-height:1.8;
+}
+.all-done-msg span{font-size:40px;display:block;margin-bottom:14px;}
 
-/* AFFIRMATION CARDS */
-.affirm-card{background:rgba(6,12,6,.9);border:1px solid rgba(90,140,70,.18);border-radius:20px;padding:24px 20px;margin-bottom:12px;position:relative;overflow:hidden;backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(140,190,100,.06);}
-.affirm-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.07) 0%,transparent 70%);pointer-events:none;}
-.affirm-card::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(90,140,70,.05) 0%,transparent 70%);pointer-events:none;}
-.affirm-glow{position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:var(--gold);opacity:.04;pointer-events:none;}
-.affirm-tag{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-.affirm-text{font-family:'Playfair Display',serif;font-size:19px;font-weight:400;line-height:1.65;color:var(--cream);margin-bottom:18px;}
-.affirm-text em{font-style:italic;color:var(--gold);}
+/* ══ AFFIRMATION CARDS — lush editorial ══ */
+.affirm-card{
+  background:rgba(6,12,7,0.92);
+  border:1px solid rgba(106,171,114,0.15);
+  border-radius:24px;padding:28px 24px;
+  margin-bottom:14px;position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(140,190,100,0.07);
+}
+.affirm-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,168,67,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.affirm-card::after{
+  content:'';position:absolute;bottom:-30px;left:-30px;
+  width:110px;height:110px;border-radius:50%;
+  background:radial-gradient(circle,rgba(106,171,114,0.05) 0%,transparent 70%);
+  pointer-events:none;
+}
+.affirm-tag{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+  font-family:'Jost',sans-serif;font-weight:600;
+}
+.affirm-ornament{height:1px;flex:1;background:linear-gradient(90deg,rgba(212,168,67,0.3),transparent);}
+.affirm-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:300;line-height:1.7;
+  color:var(--cream);margin-bottom:22px;
+  font-style:italic;
+}
+.affirm-text em{font-style:normal;color:var(--gold);}
 .affirm-row{display:flex;justify-content:space-between;align-items:center;}
-.affirm-btn{border:1px solid rgba(212,168,67,.35);border-radius:20px;padding:8px 18px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .25s;background:transparent;color:var(--gold);}
-.affirm-btn:hover{background:rgba(212,168,67,.1);box-shadow:0 0 12px rgba(212,168,67,.12);}
-.refresh-btn{background:none;border:none;font-size:16px;cursor:pointer;opacity:.3;transition:opacity .2s,transform .4s;color:var(--soft);padding:4px;}
+.affirm-btn{
+  border:1px solid rgba(212,168,67,0.3);border-radius:50px;
+  padding:9px 20px;font-family:'Jost',sans-serif;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  transition:all .25s;background:transparent;color:var(--gold);
+}
+.affirm-btn:hover{background:rgba(212,168,67,0.08);border-color:rgba(212,168,67,0.5);}
+.refresh-btn{background:none;border:none;font-size:18px;cursor:pointer;opacity:.3;transition:all .3s;color:var(--soft);padding:6px;}
 .refresh-btn:hover{opacity:.7;transform:rotate(180deg);}
+.done-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(106,171,114,0.09);color:var(--leaf);border:1px solid rgba(106,171,114,0.2);border-radius:50px;padding:8px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-family:'Jost',sans-serif;}
 
-.loading-dots{font-family:'Playfair Display',serif;font-style:italic;color:var(--soft);font-size:16px;}
+.loading-dots{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--soft);font-size:17px;}
 .loading-dots span{animation:dotPulse 1.4s ease-in-out infinite;display:inline-block;}
 .loading-dots span:nth-child(2){animation-delay:.2s}
 .loading-dots span:nth-child(3){animation-delay:.4s}
-@keyframes dotPulse{0%,80%,100%{opacity:.2;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+@keyframes dotPulse{0%,80%,100%{opacity:.2;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 
-/* MOOD BUTTONS */
-.mood-btn{background:rgba(6,12,6,.85);border:1px solid rgba(90,140,70,.18);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--soft);cursor:pointer;transition:all .2s;font-family:'Jost',sans-serif;backdrop-filter:blur(8px);}
-.mood-btn:hover{border-color:rgba(212,168,67,.3);color:var(--gold);background:rgba(10,18,10,.9);}
-.mood-btn.selected{background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.35);color:var(--gold);box-shadow:0 0 12px rgba(212,168,67,.08);}
-
-/* WIND DOWN */
-body.winddown{background:#020402;}
-body.winddown .grove-scene{filter:brightness(0.75) saturate(0.65);}
-body.winddown .affirm-text{color:#ddd8cc;}
-
-@keyframes milestoneIn{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
-#milestoneBanner.show{animation:milestoneIn .6s cubic-bezier(.175,.885,.32,1.275) forwards;}
-.done-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(90,140,70,.1);color:var(--leaf);border:1px solid rgba(90,140,70,.22);border-radius:20px;padding:7px 14px;font-size:11px;letter-spacing:1px;}
-
-/* VIBES */
-.panel-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--cream);margin-bottom:6px;}
+/* ══ VIBES PANEL ══ */
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--cream);margin-bottom:6px;}
 .panel-title em{font-style:italic;color:var(--gold);}
-.panel-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:var(--soft);margin-bottom:20px;line-height:1.7;}
+.panel-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--soft);margin-bottom:22px;line-height:1.7;}
 .vibe-row{display:flex;gap:10px;margin-bottom:20px;}
-.vibe-input{flex:1;padding:12px 16px;background:rgba(6,12,6,.85);border:1px solid rgba(90,140,70,.18);border-radius:14px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:all .2s;backdrop-filter:blur(8px);}
-.vibe-input:focus{border-color:rgba(212,168,67,.45);box-shadow:0 0 12px rgba(212,168,67,.07);}
-.vibe-input::placeholder{color:rgba(200,184,150,.28);}
-.vibe-add{background:rgba(212,168,67,.08);color:var(--gold);border:1px solid rgba(212,168,67,.3);border-radius:14px;padding:12px 18px;font-size:20px;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);}
-.vibe-add:hover{background:rgba(212,168,67,.18);}
-.section-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;margin-top:4px;}
-.vibes-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
-.vibe-chip{background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--cream);display:flex;align-items:center;gap:6px;animation:chipIn .3s ease;backdrop-filter:blur(8px);}
+.vibe-input{flex:1;padding:13px 18px;background:rgba(6,12,7,0.88);border:1px solid rgba(106,171,114,0.18);border-radius:14px;font-family:'Jost',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:all .22s;backdrop-filter:blur(8px);}
+.vibe-input:focus{border-color:rgba(212,168,67,0.4);box-shadow:0 0 0 3px rgba(212,168,67,0.04);}
+.vibe-input::placeholder{color:rgba(200,184,150,0.25);}
+.vibe-add{background:rgba(212,168,67,0.08);color:var(--gold);border:1px solid rgba(212,168,67,0.28);border-radius:14px;padding:13px 20px;font-size:22px;cursor:pointer;transition:all .2s;}
+.vibe-add:hover{background:rgba(212,168,67,0.15);}
+.section-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;margin-top:6px;font-family:'Jost',sans-serif;font-weight:600;}
+.vibes-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.vibe-chip{background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.18);border-radius:50px;padding:8px 16px;font-size:13px;color:var(--cream);display:flex;align-items:center;gap:7px;font-family:'Jost',sans-serif;animation:chipIn .3s ease;}
 @keyframes chipIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
-.chip-x{font-size:11px;opacity:.28;cursor:pointer;transition:opacity .2s;margin-left:2px;}
+.chip-x{font-size:11px;opacity:.3;cursor:pointer;transition:opacity .2s;}
 .chip-x:hover{opacity:1;color:#f08080;}
-.suggested-chip{background:rgba(6,12,6,.75);border:1px dashed rgba(90,140,70,.18);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--soft);cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);}
-.suggested-chip:hover{border-color:rgba(212,168,67,.3);color:var(--gold);background:rgba(212,168,67,.06);border-style:solid;}
+.suggested-chip{background:rgba(6,12,7,0.75);border:1px dashed rgba(106,171,114,0.18);border-radius:50px;padding:7px 15px;font-size:12px;color:var(--soft);cursor:pointer;transition:all .2s;font-family:'Jost',sans-serif;}
+.suggested-chip:hover{border-color:rgba(212,168,67,0.35);color:var(--gold);background:rgba(212,168,67,0.05);border-style:solid;}
 
-/* JOURNAL */
-.bloom-entry{background:rgba(6,12,6,.85);border:1px solid rgba(90,140,70,.14);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;animation:fadeUp .4s ease;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,.2);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.bloom-emoji{font-size:26px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(212,168,67,.15));}
-.bloom-reason{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);margin-bottom:3px;}
-.bloom-time{font-size:11px;color:var(--soft);}
-.empty-msg{text-align:center;padding:40px 20px;font-family:'Playfair Display',serif;font-style:italic;color:var(--soft);font-size:15px;line-height:1.8;}
+/* Vibe identity poetry card */
+.vibe-poetry-card{
+  margin-top:22px;background:rgba(212,168,67,0.05);
+  border:1px solid rgba(212,168,67,0.18);border-radius:24px;
+  padding:24px 20px;position:relative;overflow:hidden;
+}
+.vibe-poetry-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(212,168,67,0.12),transparent);border-radius:50%;pointer-events:none;}
+.vibe-poetry-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-family:'Jost',sans-serif;font-weight:600;}
+.vibe-poetry-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--cream);line-height:1.8;}
+.vibe-poetry-btn{margin-top:14px;background:transparent;border:1px solid rgba(212,168,67,0.25);border-radius:50px;padding:7px 16px;font-size:10px;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;}
+.vibe-poetry-btn:hover{background:rgba(212,168,67,0.08);}
 
-/* BOTTOM NAV — forest floor */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(2,5,2,.97);border-top:1px solid rgba(90,140,70,.1);display:flex;padding:10px 0 20px;z-index:100;backdrop-filter:blur(20px);box-shadow:0 -6px 40px rgba(0,0,0,.5);}
-.bottom-nav::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,.18) 30%,rgba(90,140,70,.18) 50%,rgba(212,168,67,.18) 70%,transparent 100%);}
+/* ══ JOURNAL ══ */
+.bloom-entry{
+  background:rgba(6,12,7,0.88);border:1px solid rgba(106,171,114,0.12);
+  border-radius:var(--r);padding:16px 18px;
+  display:flex;align-items:center;gap:14px;margin-bottom:10px;
+  animation:fadeUp .4s ease;backdrop-filter:blur(10px);
+  box-shadow:0 2px 14px rgba(0,0,0,0.25);
+}
+.bloom-emoji{font-size:28px;flex-shrink:0;}
+.bloom-reason{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream);margin-bottom:3px;}
+.bloom-time{font-size:11px;color:var(--soft);font-family:'Jost',sans-serif;letter-spacing:.5px;}
+.empty-msg{text-align:center;padding:50px 24px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--soft);font-size:17px;line-height:1.8;}
+
+/* On This Day card */
+.on-this-day{
+  margin-bottom:18px;padding:18px 20px;
+  background:linear-gradient(135deg,rgba(184,160,232,0.07),rgba(106,171,114,0.05));
+  border:1px solid rgba(184,160,232,0.2);border-radius:var(--r);
+}
+.on-this-day-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:10px;font-family:'Jost',sans-serif;font-weight:600;}
+.on-this-day-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--cream);margin-bottom:6px;}
+.on-this-day-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--soft);line-height:1.65;}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(2,5,2,0.97);border-top:1px solid rgba(106,171,114,0.08);
+  display:flex;padding:10px 0 22px;z-index:100;
+  backdrop-filter:blur(24px);box-shadow:0 -8px 48px rgba(0,0,0,0.6);
+}
+.bottom-nav::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.15) 30%,rgba(106,171,114,0.18) 50%,rgba(212,168,67,0.15) 70%,transparent 100%);
+}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s;}
-.nav-icon{font-size:21px;}
-.nav-label{font-size:10px;letter-spacing:.5px;color:rgba(200,184,150,.3);transition:color .2s;}
+.nav-icon{font-size:22px;transition:all .2s;}
+.nav-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(200,184,150,0.25);transition:color .2s;font-family:'Jost',sans-serif;font-weight:500;}
 .nav-item.active .nav-label{color:var(--gold);}
-.nav-item.active .nav-icon{filter:drop-shadow(0 0 8px rgba(212,168,67,.65));}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 10px rgba(212,168,67,0.7));transform:translateY(-1px);}
 
-/* TOAST */
-.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(4,8,4,.97);color:var(--cream);border:1px solid rgba(90,140,70,.22);padding:11px 22px;border-radius:20px;font-size:13px;opacity:0;transition:all .4s;z-index:200;pointer-events:none;font-family:'Playfair Display',serif;font-style:italic;white-space:nowrap;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 20px rgba(90,140,70,.06);}
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:104px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:rgba(4,8,5,0.97);color:var(--cream);
+  border:1px solid rgba(106,171,114,0.2);
+  padding:12px 24px;border-radius:50px;
+  font-size:13px;opacity:0;transition:all .4s;z-index:200;pointer-events:none;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  white-space:nowrap;backdrop-filter:blur(20px);
+  box-shadow:0 8px 40px rgba(0,0,0,0.6),0 0 20px rgba(106,171,114,0.05);
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-.panel.active .activity-item{animation:fadeUp .35s ease forwards;opacity:0;}
-.panel.active .activity-item:nth-child(2){animation-delay:.04s}
-.panel.active .activity-item:nth-child(3){animation-delay:.08s}
-.panel.active .activity-item:nth-child(4){animation-delay:.12s}
-.panel.active .activity-item:nth-child(5){animation-delay:.16s}
+/* ══ WINDDOWN MODE ══ */
+body.winddown .grove-scene{filter:brightness(0.7) saturate(0.5);}
+body.winddown .affirm-text{color:#ddd8cc;}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.panel.active > *{animation:fadeUp .4s ease forwards;opacity:0;}
+.panel.active > *:nth-child(2){animation-delay:.04s;}
+.panel.active > *:nth-child(3){animation-delay:.08s;}
+.panel.active > *:nth-child(4){animation-delay:.12s;}
+.panel.active > *:nth-child(5){animation-delay:.16s;}
 </style>
 </head>
 <body>
 
-<!-- WELCOME -->
+<!-- Ambient background particles -->
+<div class="bg-particles" id="bgParticles"></div>
+
+<!-- ══ WELCOME ══ -->
 <div id="welcome" class="screen active">
   <div class="stars-wrap" id="starsWrap"></div>
   <div class="flies-wrap" id="fliesWrap"></div>
   <div class="silhouette"></div>
   <div class="welcome-content">
-    <div class="w-moon">🌙</div>
-    <h1 class="w-title">My<br><em>Inner Grove</em></h1>
-    <p class="w-sub">A magical place that grows with you.<br>Come as you are. Leave feeling whole.</p>
+    <span class="w-moon">🌙</span>
+    <h1 class="w-title">My<span>Inner Grove</span></h1>
+    <p class="w-sub">A living, breathing sanctuary<br>that grows with every act of care.<br>Come as you are. Leave feeling whole.</p>
     <button class="w-btn" onclick="showScreen('authscreen')">Enter the Grove</button>
-    <div class="w-creatures"><span>🦋</span><span>🦉</span><span>🌿</span><span>✨</span></div>
+    <div class="w-ornament">
+      <span>🦋</span><span>🦉</span><span>🌿</span><span>✨</span>
+    </div>
   </div>
 </div>
 
-<!-- AUTH -->
+<!-- ══ AUTH ══ -->
 <div id="authscreen" class="screen">
-  <div style="display:flex;align-items:center;justify-content:center;flex:1;padding:24px;background:linear-gradient(180deg,#050d05 0%,#1a2e1a 100%)">
+  <div style="display:flex;align-items:center;justify-content:center;flex:1;padding:28px 24px;">
     <div class="auth-card">
-      <div style="font-size:40px;margin-bottom:16px">🌲</div>
+      <div style="font-size:44px;margin-bottom:18px;filter:drop-shadow(0 0 16px rgba(106,171,114,0.3))">🌲</div>
       <h2>Welcome, wanderer</h2>
-      <p>Your grove remembers you.<br>Sign in or create your sanctuary.</p>
+      <p>Your grove has been tending itself,<br>waiting for your return.</p>
       <div class="auth-tabs">
         <button class="auth-tab active" onclick="setAuthTab('signin',this)">Sign In</button>
         <button class="auth-tab" onclick="setAuthTab('signup',this)">Create Account</button>
       </div>
       <input class="auth-input" id="authName" type="text" placeholder="Your first name..." style="display:none">
       <input class="auth-input" id="authEmail" type="email" placeholder="Email address...">
-      <input class="auth-input" id="authPass" type="password" placeholder="Password...">
-      <button class="auth-btn" onclick="handleAuth()">Enter the Grove ✨</button>
+      <input class="auth-input" id="authPass" type="password" placeholder="Password..." onkeydown="if(event.key==='Enter')handleAuth()">
+      <button class="auth-btn" onclick="handleAuth()">Enter the Grove ✦</button>
       <div class="auth-error" id="authError"></div>
-      <div id="forgotWrap" style="margin-top:14px">
-        <button onclick="showForgot()" style="background:none;border:none;color:var(--soft);font-size:12px;cursor:pointer;font-family:'Jost',sans-serif;text-decoration:underline;opacity:.7">Forgot your password?</button>
+      <div id="forgotWrap" style="margin-top:16px">
+        <button onclick="showForgot()" style="background:none;border:none;color:var(--soft);font-size:12px;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:.5px;opacity:.6;text-decoration:underline;">Forgot your path?</button>
       </div>
-      <div id="forgotForm" style="display:none;margin-top:12px">
-        <input class="auth-input" id="forgotEmail" type="email" placeholder="Enter your email...">
+      <div id="forgotForm" style="display:none;margin-top:14px">
+        <input class="auth-input" id="forgotEmail" type="email" placeholder="Your email address...">
         <button class="auth-btn" onclick="sendReset()" style="margin-top:4px">Send Reset Link 🌿</button>
         <div class="auth-error" id="resetMsg" style="color:var(--leaf)"></div>
       </div>
@@ -316,155 +633,173 @@ body.winddown .affirm-text{color:#ddd8cc;}
   </div>
 </div>
 
-<!-- APP -->
+<!-- ══ APP ══ -->
 <div id="app" class="screen">
+  <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-greeting">Welcome back, <em id="userName">wanderer</em> 🌿</div>
-    <div class="streak-badge">🔥 <span id="streakCount">0</span> days</div>
+    <div class="topbar-left">
+      <div class="topbar-greeting">Welcome back, <em id="userName">wanderer</em></div>
+      <div class="topbar-date" id="topbarDate"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="streak-badge">🔥 <span id="streakCount">0</span> days</div>
+    </div>
   </div>
 
   <!-- Grove Scene -->
-  <div class="grove-scene">
-    <div class="scene-meta">
-      <div class="meta-pill" id="seasonPill">🍂 Autumn</div>
-      <div class="meta-pill" id="timePill">🌙 Night</div>
+  <div class="grove-wrap">
+    <div class="grove-scene">
+      <div class="scene-overlay-top"></div>
+      <div class="scene-meta">
+        <div class="meta-pill" id="seasonPill">🍂 Autumn</div>
+        <div class="meta-pill" id="timePill">🌙 Night</div>
+      </div>
+      <div class="moon-phase" id="moonPhaseDisplay">
+        <div class="moon-phase-icon" id="moonPhaseIcon">🌙</div>
+        <div class="moon-phase-label" id="moonPhaseLabel">Waning</div>
+      </div>
+      <div class="grove-svg-wrap" id="groveSvgWrap"></div>
+      <div class="scene-flies-wrap" id="sceneFlies"></div>
+      <button class="sound-btn playing" id="soundBtn" onclick="toggleSound()">🎵 Music on</button>
     </div>
-    <div class="grove-svg-wrap" id="groveSvgWrap"></div>
-    <div class="scene-flies-wrap" id="sceneFlies"></div>
-    <button class="sound-btn playing" id="soundBtn" onclick="toggleSound()">🎵 Music on</button>
-  </div>
-
-  <!-- Wavy seamless transition from forest scene into content -->
-  <div class="grove-scene-fade">
-    <svg viewBox="0 0 400 36" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <path d="M0,0 Q30,20 60,14 Q90,8 120,18 Q150,28 180,16 Q210,4 240,14 Q270,24 300,16 Q330,8 360,18 Q385,24 400,16 L400,36 L0,36 Z" fill="rgba(5,10,5,0.92)"/>
-    </svg>
-  </div>
-
-  <div class="grove-progress">
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    <div class="grove-wave">
+      <svg viewBox="0 0 400 32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0,0 Q25,22 55,14 Q85,6 115,18 Q145,30 175,16 Q205,2 235,14 Q265,26 295,16 Q325,6 355,18 Q378,26 400,18 L400,32 L0,32 Z" fill="rgba(6,12,7,0.95)"/>
+      </svg>
     </div>
-    <div class="progress-label" id="progressLabel">✦ 0 of 5 rituals today ✦</div>
+    <div class="grove-progress">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">✦ 0 of 5 rituals complete ✦</div>
+    </div>
   </div>
 
+  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('today',this)">🌿 Today's Rituals</div>
+    <div class="tab active" onclick="switchTab('today',this)">🌿 Rituals</div>
     <div class="tab" onclick="switchTab('affirm',this)">✨ Affirmations</div>
     <div class="tab" onclick="switchTab('vibes',this)">💛 My Vibes</div>
     <div class="tab" onclick="switchTab('journal',this)">📖 Journal</div>
   </div>
 
-  <!-- TODAY -->
+  <!-- ══ TODAY PANEL ══ -->
   <div id="panel-today" class="panel active">
 
-    <!-- Mood Check-in -->
-    <div id="moodCheckin" style="margin-bottom:16px">
-      <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--soft);margin-bottom:12px;font-style:italic;text-align:center">How are you arriving today? 🌿</div>
-      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap" id="moodBtns">
+    <!-- Mood check-in -->
+    <div class="mood-section" id="moodSection">
+      <div class="mood-label">How are you arriving today? 🌿</div>
+      <div class="mood-row" id="moodBtns">
         <button class="mood-btn" onclick="selectMood('🌸','Blooming',this)">🌸 Blooming</button>
         <button class="mood-btn" onclick="selectMood('☁️','Cloudy',this)">☁️ Cloudy</button>
         <button class="mood-btn" onclick="selectMood('🌱','Growing',this)">🌱 Growing</button>
         <button class="mood-btn" onclick="selectMood('🍂','Releasing',this)">🍂 Releasing</button>
         <button class="mood-btn" onclick="selectMood('🌙','Tired',this)">🌙 Tired</button>
+        <button class="mood-btn" onclick="selectMood('🔥','Fired Up',this)">🔥 Fired Up</button>
+        <button class="mood-btn" onclick="selectMood('🌊','Overwhelmed',this)">🌊 Waves</button>
+        <button class="mood-btn" onclick="selectMood('🙏','At Peace',this)">🙏 At Peace</button>
       </div>
-      <div id="moodResponse" style="display:none;text-align:center;padding:12px 16px;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.15);border-radius:14px;margin-top:10px">
-        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:var(--cream)" id="moodResponseText"></div>
+      <div class="mood-response" id="moodResponse">
+        <div class="mood-response-text" id="moodResponseText"></div>
       </div>
     </div>
 
-    <!-- Grove Message (surprise) -->
-    <div id="groveMessage" style="display:none;margin-bottom:16px;text-align:center;padding:14px 20px;background:rgba(168,200,135,.06);border:1px solid rgba(168,200,135,.2);border-radius:16px">
-      <div style="font-size:20px;margin-bottom:6px" id="groveMessageEmoji">🌿</div>
-      <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:var(--leaf);line-height:1.6" id="groveMessageText"></div>
+    <!-- Grove message surprise -->
+    <div class="grove-msg" id="groveMessage" style="display:none">
+      <div class="grove-msg-emoji" id="groveMessageEmoji">🌿</div>
+      <div class="grove-msg-text" id="groveMessageText"></div>
     </div>
 
-    <!-- Milestone Banner -->
-    <div id="milestoneBanner" style="display:none;margin-bottom:16px;text-align:center;padding:16px 20px;background:linear-gradient(135deg,rgba(212,168,67,.1) 0%,rgba(168,200,135,.1) 100%);border:1px solid rgba(212,168,67,.25);border-radius:16px">
-      <div style="font-size:32px;margin-bottom:8px" id="milestoneEmoji">🌟</div>
-      <div style="font-family:'Playfair Display',serif;font-size:17px;color:var(--gold);margin-bottom:4px" id="milestoneTitle">Milestone!</div>
-      <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:var(--soft)" id="milestoneText"></div>
+    <!-- Milestone -->
+    <div class="milestone-banner" id="milestoneBanner">
+      <div class="milestone-emoji" id="milestoneEmoji">🌟</div>
+      <div class="milestone-title" id="milestoneTitle">Milestone!</div>
+      <div class="milestone-text" id="milestoneText"></div>
     </div>
 
-    <div class="daily-header">
-      <h3 id="dailyGreeting">Choose what calls to you 🌿</h3>
-      <p>Pick up to <em>5 rituals</em> today — or just one. Every act of care counts.</p>
-    </div>
-    <div class="daily-progress-row">
-      <div class="daily-dots" id="dailyDots">
-        <div class="daily-dot"></div>
-        <div class="daily-dot"></div>
-        <div class="daily-dot"></div>
-        <div class="daily-dot"></div>
-        <div class="daily-dot"></div>
-      </div>
-      <div class="daily-count" id="dailyCount">0 / 5 completed</div>
-    </div>
     <div id="activitiesContainer"></div>
   </div>
 
-  <!-- AFFIRMATIONS -->
+  <!-- ══ AFFIRMATIONS PANEL ══ -->
   <div id="panel-affirm" class="panel">
 
     <div class="affirm-card">
-      <div class="affirm-glow"></div>
-      <div class="affirm-tag">✦ Your Daily Affirmation</div>
-      <div class="affirm-text" id="affirmText"><span class="loading-dots">The grove is writing for you<span>.</span><span>.</span><span>.</span></span></div>
+      <div class="affirm-tag">✦<div class="affirm-ornament"></div>Your Daily Affirmation<div class="affirm-ornament"></div>✦</div>
+      <div class="affirm-text" id="affirmText">
+        <span class="loading-dots">The grove is writing for you<span>.</span><span>.</span><span>.</span></span>
+      </div>
       <div class="affirm-row">
         <button class="affirm-btn" id="affirmBtn" onclick="completeAffirm(event)">I receive this 🙏</button>
-        <button class="refresh-btn" onclick="refreshAffirm('affirm')">↻</button>
+        <button class="refresh-btn" onclick="refreshAffirm('affirm')" title="Refresh">↻</button>
       </div>
     </div>
 
-    <div class="affirm-card" style="border-color:rgba(168,140,200,.2)">
-      <div class="affirm-glow" style="background:#a88cc8"></div>
-      <div class="affirm-tag" style="color:var(--purple)">🕊️ Your Intention & Blessing</div>
-      <div class="affirm-text" id="prayerText"><span class="loading-dots">Summoning your intention<span>.</span><span>.</span><span>.</span></span></div>
+    <div class="affirm-card" style="border-color:rgba(184,160,232,0.2)">
+      <div class="affirm-tag" style="color:var(--purple)">🕊️<div class="affirm-ornament" style="background:linear-gradient(90deg,rgba(184,160,232,0.3),transparent)"></div>Blessing & Intention<div class="affirm-ornament" style="background:linear-gradient(90deg,transparent,rgba(184,160,232,0.3))"></div>🕊️</div>
+      <div class="affirm-text" id="prayerText">
+        <span class="loading-dots">Summoning your blessing<span>.</span><span>.</span><span>.</span></span>
+      </div>
       <div class="affirm-row">
-        <button class="affirm-btn" id="prayerBtn" style="border-color:rgba(168,140,200,.5);color:var(--purple)" onclick="completeAffirm(event,'prayer')">Set this intention</button>
+        <button class="affirm-btn" id="prayerBtn" style="border-color:rgba(184,160,232,0.4);color:var(--purple)" onclick="completeAffirm(event,'prayer')">Set this intention</button>
         <button class="refresh-btn" onclick="refreshAffirm('prayer')">↻</button>
       </div>
     </div>
 
   </div>
 
-  <!-- VIBES -->
+  <!-- ══ VIBES PANEL ══ -->
   <div id="panel-vibes" class="panel">
-    <p class="panel-title">Things that make you <em>feel alive</em> ✨</p>
-    <p class="panel-sub">Your personal collection. The grove uses these to personalize your affirmations and rituals.</p>
+    <p class="panel-title">Things that make you <em>feel alive</em></p>
+    <p class="panel-sub">Your personal resonance collection. The grove uses these to personalize your affirmations and rituals — the more you add, the more the grove knows you.</p>
     <div class="vibe-row">
-      <input class="vibe-input" id="vibeInput" placeholder="e.g. candlelight, ocean air..." maxlength="30" onkeydown="if(event.key==='Enter')addVibe()">
+      <input class="vibe-input" id="vibeInput" placeholder="e.g. morning fog, candlelight..." maxlength="30" onkeydown="if(event.key==='Enter')addVibe()">
       <button class="vibe-add" onclick="addVibe()">+</button>
     </div>
     <div class="section-label">Your Resonance Collection</div>
-    <div class="vibes-grid" id="vibesGrid"><div style="font-family:'Playfair Display',serif;font-style:italic;color:var(--soft);font-size:14px">Start adding things that light you up ✨</div></div>
-    <div class="section-label" style="margin-top:8px">✦ Whispers from the grove</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px" id="suggestedVibes"></div>
-
-    <!-- Vibe Identity Poetry -->
-    <div id="vibeIdentityCard" style="display:none;margin-top:20px;background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.2);border-radius:20px;padding:20px 18px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(212,168,67,0.15),transparent);border-radius:50%;pointer-events:none"></div>
-      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">✦ The Grove Sees You</div>
-      <div id="vibePoetryText" style="font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--cream);line-height:1.8"></div>
-      <button onclick="refreshVibePoetry()" style="margin-top:12px;background:transparent;border:1px solid rgba(212,168,67,0.3);border-radius:20px;padding:6px 14px;font-size:11px;color:var(--gold);cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:1px">↻ Ask the grove again</button>
+    <div class="vibes-grid" id="vibesGrid">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--soft);font-size:15px;">Add what lights you up ✨</div>
     </div>
-    <div style="height:20px"></div>
+    <div class="section-label" style="margin-top:6px">✦ Whispers from the grove</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px" id="suggestedVibes"></div>
+
+    <div class="vibe-poetry-card" id="vibeIdentityCard" style="display:none">
+      <div class="vibe-poetry-label">✦ The Grove Sees You</div>
+      <div class="vibe-poetry-text" id="vibePoetryText"></div>
+      <button class="vibe-poetry-btn" onclick="refreshVibePoetry()">↻ Ask the grove again</button>
+    </div>
+    <div style="height:24px"></div>
   </div>
 
-  <!-- JOURNAL -->
+  <!-- ══ JOURNAL PANEL ══ -->
   <div id="panel-journal" class="panel">
-    <p class="panel-title">Your Grove Journal 🌿</p>
-    <p class="panel-sub" style="font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:var(--soft);margin-bottom:20px;line-height:1.7">Every ritual you complete is written here. This is your proof of growth.</p>
-    <div id="bloomLog"><div class="empty-msg">Your journal awaits, wanderer.<br>Complete your first ritual to begin. 🌱</div></div>
+    <p class="panel-title">Your Grove <em>Journal</em></p>
+    <p class="panel-sub">Every ritual you complete is written here. This is your proof of growth.</p>
+    <div id="onThisDay" style="display:none" class="on-this-day">
+      <div class="on-this-day-label">🗓️ On this day, one year ago</div>
+      <div class="on-this-day-title" id="onThisDayTitle"></div>
+      <div class="on-this-day-text" id="onThisDayText"></div>
+    </div>
+    <div id="bloomLog">
+      <div class="empty-msg">Your journal awaits, wanderer.<br>Complete your first ritual to begin. 🌱</div>
+    </div>
   </div>
-</div>
+
+</div><!-- end #app -->
 
 <div class="toast" id="toast"></div>
 <div class="bottom-nav" id="bottomNav" style="display:none">
-  <div class="nav-item active" id="nav-today" onclick="switchTab('today',null);setNav('nav-today')"><div class="nav-icon">🌿</div><div class="nav-label">Rituals</div></div>
-  <div class="nav-item" id="nav-affirm" onclick="switchTab('affirm',null);setNav('nav-affirm')"><div class="nav-icon">✨</div><div class="nav-label">Affirm</div></div>
-  <div class="nav-item" id="nav-vibes" onclick="switchTab('vibes',null);setNav('nav-vibes')"><div class="nav-icon">💛</div><div class="nav-label">My Vibes</div></div>
-  <div class="nav-item" id="nav-journal" onclick="switchTab('journal',null);setNav('nav-journal')"><div class="nav-icon">📖</div><div class="nav-label">Journal</div></div>
+  <div class="nav-item active" id="nav-today" onclick="switchTab('today',null);setNav('nav-today')">
+    <div class="nav-icon">🌿</div><div class="nav-label">Rituals</div>
+  </div>
+  <div class="nav-item" id="nav-affirm" onclick="switchTab('affirm',null);setNav('nav-affirm')">
+    <div class="nav-icon">✨</div><div class="nav-label">Affirm</div>
+  </div>
+  <div class="nav-item" id="nav-vibes" onclick="switchTab('vibes',null);setNav('nav-vibes')">
+    <div class="nav-icon">💛</div><div class="nav-label">Vibes</div>
+  </div>
+  <div class="nav-item" id="nav-journal" onclick="switchTab('journal',null);setNav('nav-journal')">
+    <div class="nav-icon">📖</div><div class="nav-label">Journal</div>
+  </div>
 </div>
 
 <script>
@@ -473,452 +808,288 @@ const SUPA_URL = 'https://sziggntdndrjyjtcomld.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6aWdnbnRkbmRyanlqdGNvbWxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjAzODAsImV4cCI6MjA5MDI5NjM4MH0.rHQ5Ch_eTzWMdjoxlDqeq4Hn6x__VH9cnduFvmDndo0';
 const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ══ ACTIVITIES LIBRARY ══
+// ══ ACTIVITIES ══
 const activities = [
-  // Body & Movement
-  { key:'bath', emoji:'🛁', name:'Draw a slow bath', desc:'Add Epsom salts, dim the lights, let it be a ritual not a rush.', category:'Body Love' },
-  { key:'stretch', emoji:'🧘', name:'10 minutes of gentle stretching', desc:'Move your body with intention. Feel every muscle say thank you.', category:'Body Love' },
-  { key:'walk', emoji:'🚶', name:'A mindful walk outside', desc:'No destination. Just move and notice what\'s beautiful around you.', category:'Body Love' },
-  { key:'water', emoji:'💧', name:'Drink 3 full glasses of water', desc:'Your body is asking for this. Hydration is self love.', category:'Body Love' },
-  { key:'skincare', emoji:'✨', name:'Full skincare ritual', desc:'Cleanse, moisturize, massage. Touch yourself with genuine tenderness.', category:'Body Love' },
-  { key:'dance', emoji:'💃', name:'Dance it out', desc:'Put on a song that moves you and just go. No one is watching.', category:'Body Love' },
-  { key:'nourish', emoji:'🥗', name:'Cook something nourishing', desc:'A meal made with love for yourself. No guilt, just care.', category:'Body Love' },
-  // Stillness & Peace
-  { key:'candle', emoji:'🕯️', name:'Candle breathing moment', desc:'Light a candle. Breathe in for 4, hold for 4, out for 6. Five rounds.', category:'Stillness & Peace' },
-  { key:'tea', emoji:'🍵', name:'Slow tea ceremony', desc:'Make your favorite warm drink. Sit down. No phone. Just taste it.', category:'Stillness & Peace' },
-  { key:'silence', emoji:'🌙', name:'10 minutes of silence', desc:'No music, no scrolling. Just you and the quiet. Let it feel good.', category:'Stillness & Peace' },
-  { key:'breathe', emoji:'🌬️', name:'Box breathing practice', desc:'In for 4, hold for 4, out for 4, hold for 4. Repeat 5 times.', category:'Stillness & Peace' },
-  { key:'sunrise', emoji:'🌅', name:'Watch the sky change', desc:'Sunrise or sunset — step outside and witness something beautiful.', category:'Stillness & Peace' },
-  { key:'barefoot', emoji:'🌿', name:'Barefoot on the earth', desc:'Find grass, sand, or soil. Stand on it barefoot. Just breathe.', category:'Stillness & Peace' },
-  // Heart & Connection
-  { key:'voicenote', emoji:'💌', name:'Send a voice note of love', desc:'Tell someone you\'re thinking of them. No reason needed.', category:'Heart & Connection' },
-  { key:'gratitude', emoji:'🙏', name:'Write 5 things you\'re grateful for', desc:'Real, specific things. Not generic. Things that actually moved you today.', category:'Heart & Connection' },
-  { key:'letter', emoji:'📝', name:'Write a letter to your future self', desc:'Tell her what you\'re working through. Tell her she\'s going to be okay.', category:'Heart & Connection' },
-  { key:'compliment', emoji:'💛', name:'Say something kind to yourself', desc:'In the mirror, out loud. Your name + something you genuinely love about yourself.', category:'Heart & Connection' },
-  { key:'forgive', emoji:'🌸', name:'Forgive yourself for something', desc:'Write it down then write: "I release this with love." Mean it.', category:'Heart & Connection' },
-  { key:'callsomeone', emoji:'📞', name:'Call someone you love', desc:'Not text — call. Let your voice be heard. Let theirs warm you.', category:'Heart & Connection' },
-  // Rest & Restore
-  { key:'nap', emoji:'😴', name:'Take a guilt-free nap', desc:'Set a timer for 20-30 minutes. Rest is productive. You deserve this.', category:'Rest & Restore' },
-  { key:'earlybed', emoji:'🌙', name:'Go to bed 30 min early', desc:'Create a wind-down ritual. Your nervous system will thank you.', category:'Rest & Restore' },
-  { key:'journal', emoji:'📓', name:'Brain dump journaling', desc:'Write whatever is in your head for 10 minutes. Don\'t edit. Just release.', category:'Rest & Restore' },
-  { key:'offline', emoji:'📵', name:'1 hour completely offline', desc:'Put the phone in another room. No peeking. Just be present.', category:'Rest & Restore' },
-  { key:'cozy', emoji:'🧸', name:'Create a cozy moment', desc:'Soft blanket, warm drink, something comforting. Let yourself just be held.', category:'Rest & Restore' },
-  // Joy & Play
-  { key:'create', emoji:'🎨', name:'Make something creative', desc:'Draw, write, cook, build — anything made by your hands for joy.', category:'Joy & Play' },
-  { key:'laugh', emoji:'😂', name:'Watch something that makes you laugh', desc:'Belly laughs are medicine. Give yourself 20 minutes of pure joy.', category:'Joy & Play' },
-  { key:'music', emoji:'🎵', name:'Full album listen', desc:'Put on something you love. Lie down. Just listen all the way through.', category:'Joy & Play' },
-  { key:'flowers', emoji:'🌸', name:'Buy yourself flowers', desc:'Or pick something beautiful from outside. Put it where you\'ll see it.', category:'Joy & Play' },
-  { key:'newplace', emoji:'🗺️', name:'Go somewhere new', desc:'A coffee shop, a street, a park you\'ve never visited. Novelty is joy.', category:'Joy & Play' },
-  // Morning & Intention
-  { key:'morning', emoji:'☀️', name:'Intentional morning', desc:'Before your phone — water, stretch, one deep breath, one intention set.', category:'Morning & Intention' },
-  { key:'intention', emoji:'🌱', name:'Set a daily intention', desc:'Write one word or sentence that will guide your day. Return to it.', category:'Morning & Intention' },
-  { key:'affirmmorning', emoji:'🪞', name:'Morning mirror affirmation', desc:'Look yourself in the eyes and say: "Today I choose myself." Mean it.', category:'Morning & Intention' },
+  {key:'bath',emoji:'🛁',name:'Draw a slow bath',desc:'Add Epsom salts, dim the lights. Let it be a ritual, not a rush.',category:'Body Love'},
+  {key:'stretch',emoji:'🧘',name:'10 minutes of gentle stretching',desc:'Move your body with intention. Feel every muscle say thank you.',category:'Body Love'},
+  {key:'walk',emoji:'🚶',name:'A mindful walk outside',desc:'No destination. Just move and notice what\'s beautiful around you.',category:'Body Love'},
+  {key:'water',emoji:'💧',name:'Drink 3 full glasses of water',desc:'Your body is asking for this. Hydration is self love.',category:'Body Love'},
+  {key:'skincare',emoji:'✨',name:'Full skincare ritual',desc:'Cleanse, moisturize, massage. Touch yourself with genuine tenderness.',category:'Body Love'},
+  {key:'dance',emoji:'💃',name:'Dance it out',desc:'Put on a song that moves you and just go. No one is watching.',category:'Body Love'},
+  {key:'nourish',emoji:'🥗',name:'Cook something nourishing',desc:'A meal made with love for yourself. No guilt, just care.',category:'Body Love'},
+  {key:'candle',emoji:'🕯️',name:'Candle breathing moment',desc:'Light a candle. Breathe in for 4, hold for 4, out for 6. Five rounds.',category:'Stillness & Peace'},
+  {key:'tea',emoji:'🍵',name:'Slow tea ceremony',desc:'Make your favorite warm drink. Sit. No phone. Just taste it.',category:'Stillness & Peace'},
+  {key:'silence',emoji:'🌙',name:'10 minutes of silence',desc:'No music, no scrolling. Just you and the quiet. Let it feel good.',category:'Stillness & Peace'},
+  {key:'breathe',emoji:'🌬️',name:'Box breathing practice',desc:'In for 4, hold for 4, out for 4, hold for 4. Repeat 5 times.',category:'Stillness & Peace'},
+  {key:'sunrise',emoji:'🌅',name:'Watch the sky change',desc:'Sunrise or sunset — witness something beautiful.',category:'Stillness & Peace'},
+  {key:'barefoot',emoji:'🌿',name:'Barefoot on the earth',desc:'Find grass, sand, or soil. Stand on it barefoot. Just breathe.',category:'Stillness & Peace'},
+  {key:'voicenote',emoji:'💌',name:'Send a voice note of love',desc:'Tell someone you\'re thinking of them. No reason needed.',category:'Heart & Connection'},
+  {key:'gratitude',emoji:'🙏',name:'Write 5 things you\'re grateful for',desc:'Real, specific things. Not generic. Things that actually moved you today.',category:'Heart & Connection'},
+  {key:'letter',emoji:'📝',name:'Write a letter to your future self',desc:'Tell her what you\'re working through. Tell her she\'s going to be okay.',category:'Heart & Connection'},
+  {key:'compliment',emoji:'💛',name:'Say something kind to yourself',desc:'In the mirror, out loud. Your name + something you genuinely love about yourself.',category:'Heart & Connection'},
+  {key:'forgive',emoji:'🌸',name:'Forgive yourself for something',desc:'Write it down then write: "I release this with love." Mean it.',category:'Heart & Connection'},
+  {key:'callsomeone',emoji:'📞',name:'Call someone you love',desc:'Not text — call. Let your voice be heard. Let theirs warm you.',category:'Heart & Connection'},
+  {key:'nap',emoji:'😴',name:'Take a guilt-free nap',desc:'Set a timer for 20-30 minutes. Rest is productive. You deserve this.',category:'Rest & Restore'},
+  {key:'earlybed',emoji:'🌙',name:'Go to bed 30 min early',desc:'Create a wind-down ritual. Your nervous system will thank you.',category:'Rest & Restore'},
+  {key:'journal',emoji:'📓',name:'Brain dump journaling',desc:'Write whatever is in your head for 10 minutes. Don\'t edit. Just release.',category:'Rest & Restore'},
+  {key:'offline',emoji:'📵',name:'1 hour completely offline',desc:'Put the phone in another room. No peeking. Just be present.',category:'Rest & Restore'},
+  {key:'cozy',emoji:'🧸',name:'Create a cozy moment',desc:'Soft blanket, warm drink, something comforting. Let yourself just be held.',category:'Rest & Restore'},
+  {key:'create',emoji:'🎨',name:'Make something creative',desc:'Draw, write, cook, build — anything made by your hands for joy.',category:'Joy & Play'},
+  {key:'laugh',emoji:'😂',name:'Watch something that makes you laugh',desc:'Belly laughs are medicine. Give yourself 20 minutes of pure joy.',category:'Joy & Play'},
+  {key:'music',emoji:'🎵',name:'Full album listen',desc:'Put on something you love. Lie down. Just listen all the way through.',category:'Joy & Play'},
+  {key:'flowers',emoji:'🌸',name:'Buy yourself flowers',desc:'Or pick something beautiful from outside. Put it where you\'ll see it.',category:'Joy & Play'},
+  {key:'newplace',emoji:'🗺️',name:'Go somewhere new',desc:'A coffee shop, a street, a park you\'ve never visited. Novelty is joy.',category:'Joy & Play'},
+  {key:'morning',emoji:'☀️',name:'Intentional morning',desc:'Before your phone — water, stretch, one deep breath, one intention set.',category:'Morning & Intention'},
+  {key:'intention',emoji:'🌱',name:'Set a daily intention',desc:'Write one word or sentence that will guide your day. Return to it.',category:'Morning & Intention'},
+  {key:'affirmmorning',emoji:'🪞',name:'Morning mirror affirmation',desc:'Look yourself in the eyes and say: "Today I choose myself." Mean it.',category:'Morning & Intention'},
 ];
 
 const suggestedVibesList = [
-  {icon:'☕',label:'Morning coffee'},{icon:'🌊',label:'Ocean sounds'},
-  {icon:'📖',label:'Reading in bed'},{icon:'🕯️',label:'Candlelight'},
-  {icon:'🎵',label:'Music that moves me'},{icon:'🌧️',label:'Rainy days'},
-  {icon:'🌅',label:'Golden hour'},{icon:'🫂',label:'Long hugs'},
-  {icon:'🌸',label:'Fresh flowers'},{icon:'🛁',label:'Slow baths'},
-  {icon:'🍵',label:'Herbal tea'},{icon:'📝',label:'Journaling'},
-  {icon:'🌿',label:'Being in nature'},{icon:'😂',label:'Belly laughs'},
-  {icon:'🎨',label:'Creating something'},{icon:'🙏',label:'Quiet prayer'},
-  {icon:'🌙',label:'Late night stillness'},{icon:'✨',label:'Little magic moments'},
+  {icon:'☕',label:'Morning coffee'},{icon:'🌊',label:'Ocean sounds'},{icon:'📖',label:'Reading in bed'},
+  {icon:'🕯️',label:'Candlelight'},{icon:'🎵',label:'Music that moves me'},{icon:'🌧️',label:'Rainy days'},
+  {icon:'🌅',label:'Golden hour'},{icon:'🫂',label:'Long hugs'},{icon:'🌸',label:'Fresh flowers'},
+  {icon:'🛁',label:'Slow baths'},{icon:'🍵',label:'Herbal tea'},{icon:'📝',label:'Journaling'},
+  {icon:'🌿',label:'Being in nature'},{icon:'😂',label:'Belly laughs'},{icon:'🎨',label:'Creating something'},
+  {icon:'🙏',label:'Quiet prayer'},{icon:'🌙',label:'Late night stillness'},{icon:'✨',label:'Little magic moments'},
+  {icon:'🦋',label:'Morning light'},{icon:'🌫️',label:'Morning fog'},
 ];
-
-const groveElements = {
-  trees: ['🌲','🌳','🌲','🌳','🍂','🌾','🍄','🎋'],
-  creatures: ['🦋','🦉','🦊','🐇','🦌','🐿️','🦔','🐦'],
-  seasons: {
-    spring:{sky:'linear-gradient(180deg,#1a3040 0%,#2d4a30 50%,#0d1a05 100%)',moon:'🌸',label:'🌸 Spring'},
-    summer:{sky:'linear-gradient(180deg,#0d2240 0%,#1a3a20 50%,#0d1a05 100%)',moon:'☀️',label:'☀️ Summer'},
-    autumn:{sky:'linear-gradient(180deg,#1a1030 0%,#2d2a10 50%,#1a0d05 100%)',moon:'🌙',label:'🍂 Autumn'},
-    winter:{sky:'linear-gradient(180deg,#0d1a2a 0%,#1a2030 50%,#0d0d1a 100%)',moon:'❄️',label:'❄️ Winter'},
-  },
-  times:{
-    dawn:{label:'🌅 Dawn'},day:{label:'☀️ Day'},
-    dusk:{label:'🌆 Dusk'},night:{label:'🌙 Night'},
-  }
-};
 
 // ══ STATE ══
 let state = {
-  user: null, profile: null,
-  todayCompletions: [], allBlooms: [],
-  vibes: [], season: 'autumn', timeOfDay: 'night',
-  authMode: 'signin',
+  user:null, profile:null,
+  todayCompletions:[], allBlooms:[],
+  vibes:[], season:'autumn', timeOfDay:'night',
+  authMode:'signin',
 };
 
-// ══ AUDIO ══
-let audioCtx = null, soundPlaying = false, soundNodes = [], currentMoodSound = null;
+// ══ MOON PHASE ══
+function getMoonPhase() {
+  const phases = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
+  const labels = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  const date = new Date();
+  const synodic = 29.53058867;
+  const known = new Date(2000, 0, 6, 18, 14); // known new moon
+  const diff = (date - known) / (1000 * 60 * 60 * 24);
+  const phase = Math.floor((((diff % synodic) + synodic) % synodic) / synodic * 8) % 8;
+  return { icon: phases[phase], label: labels[phase] };
+}
 
-const moodSounds = {
-  '🌸': { name:'Birdsong & Breeze', label:'🌸 Sounds on' },
-  '☁️': { name:'Soft Rain', label:'☁️ Sounds on' },
-  '🌱': { name:'Morning Forest', label:'🌱 Sounds on' },
-  '🍂': { name:'Autumn Wind', label:'🍂 Sounds on' },
-  '🌙': { name:'Night Crickets', label:'🌙 Sounds on' },
-  '🔥': { name:'Crackling Fire', label:'🔥 Sounds on' },
-  '🌊': { name:'Ocean Waves', label:'🌊 Sounds on' },
-  '💪': { name:'Rising Arpeggio', label:'💪 Sounds on' },
-  '😂': { name:'Joyful Bells', label:'😂 Sounds on' },
-  '🙏': { name:'Singing Bowl', label:'🙏 Sounds on' },
-  default: { name:'Forest Sounds', label:'🎵 Sounds on' },
+// ══ AMBIENT BACKGROUND PARTICLES ══
+function buildBgParticles() {
+  const wrap = document.getElementById('bgParticles');
+  const configs = [
+    {w:300,h:300,x:'20%',y:'10%',c:'rgba(106,171,114,0.06)',d:'30s',delay:'0s',dx:'25px',dy:'-35px',dx2:'-20px',dy2:'-20px'},
+    {w:200,h:200,x:'70%',y:'30%',c:'rgba(212,168,67,0.05)',d:'25s',delay:'-10s',dx:'-30px',dy:'-25px',dx2:'20px',dy2:'-30px'},
+    {w:250,h:250,x:'10%',y:'60%',c:'rgba(184,160,232,0.04)',d:'35s',delay:'-5s',dx:'30px',dy:'-40px',dx2:'-25px',dy2:'-15px'},
+    {w:180,h:180,x:'80%',y:'70%',c:'rgba(106,171,114,0.05)',d:'28s',delay:'-15s',dx:'-20px',dy:'-30px',dx2:'15px',dy2:'-20px'},
+  ];
+  configs.forEach(c => {
+    const p = document.createElement('div');
+    p.className = 'bg-particle';
+    p.style.cssText = `width:${c.w}px;height:${c.h}px;left:${c.x};top:${c.y};--c:${c.c};--d:${c.d};--delay:${c.delay};--dx:${c.dx};--dy:${c.dy};--dx2:${c.dx2};--dy2:${c.dy2};`;
+    wrap.appendChild(p);
+  });
+}
+
+// ══ AUDIO ══
+let soundPlaying = false;
+const SoundSystem = {
+  ctx: null, bgGain: null, bgNodes: [], enabled: true,
+
+  init() {
+    if (this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    if (!this.ctx) return;
+    this.bgGain = this.ctx.createGain();
+    this.bgGain.gain.value = 0.15;
+    this.bgGain.connect(this.ctx.destination);
+  },
+
+  makeNoise(color='pink') {
+    if (!this.ctx) return null;
+    const bufSize = this.ctx.sampleRate * 3;
+    const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < bufSize; i++) {
+      const w = Math.random()*2-1;
+      if (color==='pink') {
+        b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;
+        data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)/7;b6=w*0.115926;
+      } else { data[i] = w; }
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf; src.loop = true; return src;
+  },
+
+  chime(notes=[523,659,784,1047]) {
+    if (!this.enabled) return;
+    try {
+      this.init();
+      notes.forEach((freq,i) => {
+        setTimeout(() => {
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          osc.type = 'sine'; osc.frequency.value = freq;
+          g.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+1.4);
+          osc.connect(g); g.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime+1.4);
+        }, i*130);
+      });
+    } catch(e) {}
+  },
+
+  sparkle() { this.chime([784,988,1175,1568,2093]); },
+
+  leafRustle() {
+    if (!this.enabled) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const buf = this.ctx.createBuffer(1, this.ctx.sampleRate*0.4, this.ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2);
+      const src = this.ctx.createBufferSource(); src.buffer = buf;
+      const f = this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=3200; f.Q.value=0.7;
+      const g = this.ctx.createGain(); g.gain.value=0.2;
+      src.connect(f); f.connect(g); g.connect(this.ctx.destination); src.start();
+    } catch(e) {}
+  },
+
+  startAmbient() {
+    if (!this.enabled) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      this.stopAmbient();
+
+      // Wind bed
+      const wind = this.makeNoise('pink');
+      if (!wind) return;
+      const wf = this.ctx.createBiquadFilter(); wf.type='lowpass'; wf.frequency.value=450;
+      const wg = this.ctx.createGain(); wg.gain.value=0.55;
+      wind.connect(wf); wf.connect(wg); wg.connect(this.bgGain);
+      wind.start(); this.bgNodes.push(wind);
+
+      // Deep forest drones
+      [98, 130.81, 196].forEach((freq,i) => {
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type='sine'; osc.frequency.value=freq;
+        g.gain.value=0.06/(i+1);
+        osc.connect(g); g.connect(this.bgGain); osc.start();
+        this.bgNodes.push(osc);
+      });
+
+      // Gentle piano melody — pentatonic
+      const melody = [261.63,329.63,392,523.25,329.63,261.63,196,261.63,329.63,392,523.25,392];
+      let ni = 0;
+      const playNote = () => {
+        if (this.bgNodes.length===0) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const eg = this.ctx.createGain();
+          osc.type='triangle'; osc.frequency.value=melody[ni%melody.length]; ni++;
+          eg.gain.setValueAtTime(0.1, this.ctx.currentTime);
+          eg.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+2.5);
+          osc.connect(eg); eg.connect(this.bgGain);
+          osc.start(); osc.stop(this.ctx.currentTime+2.5);
+        } catch(e) {}
+        setTimeout(playNote, 2800+Math.random()*1800);
+      };
+      setTimeout(playNote, 800);
+
+      // Bird chirps
+      const chirp = () => {
+        if (this.bgNodes.length===0) return;
+        try {
+          const sweeps = 2+Math.floor(Math.random()*3);
+          for (let s=0;s<sweeps;s++) {
+            setTimeout(() => {
+              const osc = this.ctx.createOscillator();
+              const eg = this.ctx.createGain();
+              const bf = 1800+Math.random()*1600;
+              osc.frequency.setValueAtTime(bf, this.ctx.currentTime);
+              osc.frequency.linearRampToValueAtTime(bf*1.35, this.ctx.currentTime+0.07);
+              osc.type='sine';
+              eg.gain.setValueAtTime(0.06, this.ctx.currentTime);
+              eg.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+0.18);
+              osc.connect(eg); eg.connect(this.ctx.destination);
+              osc.start(); osc.stop(this.ctx.currentTime+0.18);
+            }, s*120);
+          }
+        } catch(e) {}
+        setTimeout(chirp, 4000+Math.random()*8000);
+      };
+      setTimeout(chirp, 2000);
+
+      soundPlaying = true;
+      const btn = document.getElementById('soundBtn');
+      if (btn) { btn.textContent='🎵 Music on'; btn.classList.add('playing'); }
+
+    } catch(e) { console.error('SoundSystem error',e); }
+  },
+
+  stopAmbient() {
+    this.bgNodes.forEach(n => { try { n.stop(); n.disconnect(); } catch(e){} });
+    this.bgNodes = [];
+    soundPlaying = false;
+  },
+
+  toggle() {
+    this.enabled = !this.enabled;
+    if (!this.enabled) { this.stopAmbient(); } else { this.startAmbient(); }
+    return this.enabled;
+  }
 };
 
 function toggleSound() {
   const enabled = SoundSystem.toggle();
   const btn = document.getElementById('soundBtn');
-  if (enabled) {
-    if (btn) { btn.textContent = '🎵 Music on'; btn.classList.add('playing'); }
-    startMoodSound();
-  } else {
-    stopSound();
-    if (btn) { btn.textContent = '🎵 Music off'; btn.classList.remove('playing'); }
-  }
-}
-
-function startMoodSound() {
-  const savedMood = JSON.parse(localStorage.getItem('grove_mood_today') || '{}');
-  const moodEmoji = savedMood?.date === new Date().toISOString().split('T')[0] ? savedMood.emoji : null;
-  currentMoodSound = moodEmoji;
-  startSound(moodEmoji);
-}
-
-function startSound(mood) {
-  try {
-    if (audioCtx) { audioCtx.close(); }
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    soundNodes = [];
-    const bufferSize = 4096;
-    const masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0;
-    masterGain.connect(audioCtx.destination);
-    // Fade in
-    masterGain.gain.setTargetAtTime(1, audioCtx.currentTime, 1.5);
-
-    if (mood === '☁️') {
-      // Soft rain — heavier white noise
-      const rain = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      rain.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.06;
-      };
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass'; filter.frequency.value = 600;
-      const g = audioCtx.createGain(); g.gain.value = 0.4;
-      rain.connect(filter); filter.connect(g); g.connect(masterGain);
-      soundNodes.push(rain, filter, g);
-
-      // Distant thunder rumble every ~20s
-      const rumbleInterval = setInterval(() => {
-        if (!soundPlaying) { clearInterval(rumbleInterval); return; }
-        const rumble = audioCtx.createOscillator();
-        const rg = audioCtx.createGain();
-        rumble.frequency.value = 60 + Math.random() * 40;
-        rumble.type = 'sawtooth';
-        rg.gain.value = 0;
-        rumble.connect(rg); rg.connect(masterGain); rumble.start();
-        rg.gain.setTargetAtTime(0.03, audioCtx.currentTime, 0.5);
-        rg.gain.setTargetAtTime(0, audioCtx.currentTime + 3, 1);
-        setTimeout(() => { try { rumble.stop(); rumble.disconnect(); } catch(e){} }, 5000);
-      }, 18000 + Math.random() * 12000);
-      soundNodes.push({ disconnect: () => clearInterval(rumbleInterval) });
-
-    } else if (mood === '🌸') {
-      // Birdsong — high frequency chirps with gentle breeze
-      const breeze = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      breeze.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.015;
-      };
-      const bf = audioCtx.createBiquadFilter();
-      bf.type = 'bandpass'; bf.frequency.value = 800; bf.Q.value = 0.5;
-      const bg = audioCtx.createGain(); bg.gain.value = 0.3;
-      breeze.connect(bf); bf.connect(bg); bg.connect(masterGain);
-      soundNodes.push(breeze, bf, bg);
-
-      // Bird chirps
-      const chirpInterval = setInterval(() => {
-        if (!soundPlaying) { clearInterval(chirpInterval); return; }
-        const chirpCount = 2 + Math.floor(Math.random() * 4);
-        for (let c = 0; c < chirpCount; c++) {
-          setTimeout(() => {
-            const osc = audioCtx.createOscillator();
-            const og = audioCtx.createGain();
-            osc.frequency.value = 2400 + Math.random() * 1200;
-            osc.type = 'sine';
-            og.gain.value = 0;
-            osc.connect(og); og.connect(masterGain); osc.start();
-            og.gain.setTargetAtTime(0.012, audioCtx.currentTime, 0.02);
-            og.gain.setTargetAtTime(0, audioCtx.currentTime + 0.15, 0.05);
-            setTimeout(() => { try { osc.stop(); osc.disconnect(); } catch(e){} }, 400);
-          }, c * (100 + Math.random() * 200));
-        }
-      }, 2000 + Math.random() * 3000);
-      soundNodes.push({ disconnect: () => clearInterval(chirpInterval) });
-
-    } else if (mood === '🍂') {
-      // Autumn wind — swelling noise with leaf rustles
-      const wind = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      let windPhase = 0;
-      wind.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        windPhase += 0.0001;
-        const intensity = 0.02 + 0.02 * Math.sin(windPhase);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * intensity;
-      };
-      const wf = audioCtx.createBiquadFilter();
-      wf.type = 'bandpass'; wf.frequency.value = 300; wf.Q.value = 0.3;
-      const wg = audioCtx.createGain(); wg.gain.value = 0.5;
-      wind.connect(wf); wf.connect(wg); wg.connect(masterGain);
-      soundNodes.push(wind, wf, wg);
-
-      // Leaf rustles
-      const rustleInterval = setInterval(() => {
-        if (!soundPlaying) { clearInterval(rustleInterval); return; }
-        const rustle = audioCtx.createScriptProcessor(1024, 1, 1);
-        rustle.onaudioprocess = e => {
-          const out = e.outputBuffer.getChannelData(0);
-          for (let i = 0; i < 1024; i++) out[i] = (Math.random() * 2 - 1) * 0.03;
-        };
-        const rf = audioCtx.createBiquadFilter();
-        rf.type = 'highpass'; rf.frequency.value = 2000;
-        const rg = audioCtx.createGain(); rg.gain.value = 0;
-        rustle.connect(rf); rf.connect(rg); rg.connect(masterGain);
-        rg.gain.setTargetAtTime(0.3, audioCtx.currentTime, 0.1);
-        rg.gain.setTargetAtTime(0, audioCtx.currentTime + 0.8, 0.2);
-        setTimeout(() => { try { rustle.disconnect(); rf.disconnect(); } catch(e){} }, 1500);
-      }, 1500 + Math.random() * 2000);
-      soundNodes.push({ disconnect: () => clearInterval(rustleInterval) });
-
-    } else if (mood === '🌱') {
-      // Morning forest — light breeze + gentle water trickle
-      const mist = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      mist.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.018;
-      };
-      const mf = audioCtx.createBiquadFilter();
-      mf.type = 'bandpass'; mf.frequency.value = 500; mf.Q.value = 0.4;
-      const mg = audioCtx.createGain(); mg.gain.value = 0.35;
-      mist.connect(mf); mf.connect(mg); mg.connect(masterGain);
-      soundNodes.push(mist, mf, mg);
-
-      // Water trickle
-      const water = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      water.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.012;
-      };
-      const waterF = audioCtx.createBiquadFilter();
-      waterF.type = 'highpass'; waterF.frequency.value = 1200;
-      const waterG = audioCtx.createGain(); waterG.gain.value = 0.25;
-      water.connect(waterF); waterF.connect(waterG); waterG.connect(masterGain);
-      soundNodes.push(water, waterF, waterG);
-
-    } else if (mood === '🔥') {
-      // Fired Up — crackling fire with driving pulse
-      const crackle = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      crackle.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = Math.random() > 0.98 ? (Math.random() * 2 - 1) * 0.2 : (Math.random() * 2 - 1) * 0.01;
-      };
-      const cf = audioCtx.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 800; cf.Q.value = 1;
-      const cg = audioCtx.createGain(); cg.gain.value = 0.35;
-      crackle.connect(cf); cf.connect(cg); cg.connect(masterGain);
-      soundNodes.push(crackle, cf, cg);
-      const pulse = setInterval(() => {
-        if (!soundPlaying) { clearInterval(pulse); return; }
-        const osc = audioCtx.createOscillator();
-        const eg = audioCtx.createGain();
-        osc.frequency.value = 80; osc.type = 'sine';
-        eg.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        eg.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.connect(eg); eg.connect(masterGain); osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      }, 600);
-      soundNodes.push({ disconnect: () => clearInterval(pulse) });
-
-    } else if (mood === '🌊') {
-      // Overwhelmed — deep ocean waves, slow and grounding
-      const wave = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      let wphase = 0;
-      wave.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        wphase += 0.00003;
-        const intensity = 0.03 + 0.025 * Math.sin(wphase);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * intensity;
-      };
-      const wwf = audioCtx.createBiquadFilter(); wwf.type = 'lowpass'; wwf.frequency.value = 300;
-      const wwg = audioCtx.createGain(); wwg.gain.value = 0.6;
-      wave.connect(wwf); wwf.connect(wwg); wwg.connect(masterGain);
-      soundNodes.push(wave, wwf, wwg);
-      const hum = audioCtx.createOscillator();
-      const hg = audioCtx.createGain(); hg.gain.value = 0.04;
-      hum.frequency.value = 55; hum.type = 'sine';
-      hum.connect(hg); hg.connect(masterGain); hum.start();
-      soundNodes.push(hum, hg);
-
-    } else if (mood === '💪') {
-      // Strong — bright uplifting arpeggio
-      const notes = [261.63, 329.63, 392, 523.25, 659.25];
-      let ni = 0;
-      const arp = setInterval(() => {
-        if (!soundPlaying) { clearInterval(arp); return; }
-        const osc = audioCtx.createOscillator();
-        const eg = audioCtx.createGain();
-        osc.type = 'triangle'; osc.frequency.value = notes[ni % notes.length]; ni++;
-        eg.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        eg.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-        osc.connect(eg); eg.connect(masterGain); osc.start();
-        osc.stop(audioCtx.currentTime + 0.8);
-      }, 400);
-      soundNodes.push({ disconnect: () => clearInterval(arp) });
-
-    } else if (mood === '😂') {
-      // Joyful — playful bright bells
-      const joyNotes = [523.25, 659.25, 783.99, 1046.5, 783.99, 659.25];
-      let ji = 0;
-      const joy = setInterval(() => {
-        if (!soundPlaying) { clearInterval(joy); return; }
-        const osc = audioCtx.createOscillator();
-        const eg = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.value = joyNotes[ji % joyNotes.length]; ji++;
-        eg.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        eg.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-        osc.connect(eg); eg.connect(masterGain); osc.start();
-        osc.stop(audioCtx.currentTime + 0.6);
-      }, 350);
-      soundNodes.push({ disconnect: () => clearInterval(joy) });
-
-    } else if (mood === '🙏') {
-      // At Peace — singing bowl 432hz with overtones
-      const bowl = audioCtx.createOscillator();
-      const bowlG = audioCtx.createGain(); bowlG.gain.value = 0.12;
-      bowl.type = 'sine'; bowl.frequency.value = 432;
-      bowl.connect(bowlG); bowlG.connect(masterGain); bowl.start();
-      soundNodes.push(bowl, bowlG);
-      [864, 1296].forEach((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain(); g.gain.value = 0.03 / (i + 1);
-        osc.type = 'sine'; osc.frequency.value = freq;
-        osc.connect(g); g.connect(masterGain); osc.start();
-        soundNodes.push(osc, g);
-      });
-      const gong = setInterval(() => {
-        if (!soundPlaying) { clearInterval(gong); return; }
-        const osc = audioCtx.createOscillator();
-        const eg = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.value = 220;
-        eg.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        eg.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 6);
-        osc.connect(eg); eg.connect(masterGain); osc.start();
-        osc.stop(audioCtx.currentTime + 6);
-      }, 8000);
-      soundNodes.push({ disconnect: () => clearInterval(gong) });
-
-    } else {
-      // Default / 🌙 Tired — deep night crickets
-      const night = audioCtx.createScriptProcessor(bufferSize, 1, 1);
-      night.onaudioprocess = e => {
-        const out = e.outputBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.02;
-      };
-      const nf = audioCtx.createBiquadFilter();
-      nf.type = 'lowpass'; nf.frequency.value = 350;
-      const ng = audioCtx.createGain(); ng.gain.value = 0.25;
-      night.connect(nf); nf.connect(ng); ng.connect(masterGain);
-      soundNodes.push(night, nf, ng);
-
-      // Crickets
-      for (let i = 0; i < 3; i++) {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.frequency.value = 3600 + i * 500;
-        osc.type = 'sine'; g.gain.value = 0;
-        osc.connect(g); g.connect(masterGain); osc.start();
-        const ci = setInterval(() => {
-          if (!soundPlaying) { clearInterval(ci); return; }
-          g.gain.setTargetAtTime(0.006, audioCtx.currentTime, 0.05);
-          g.gain.setTargetAtTime(0, audioCtx.currentTime + 0.12, 0.04);
-        }, 900 + i * 350);
-        soundNodes.push(osc, g, { disconnect: () => clearInterval(ci) });
-      }
-    }
-
-    soundNodes.push(masterGain);
-    soundPlaying = true;
-    const btn = document.getElementById('soundBtn');
-    const moodInfo = moodSounds[mood] || moodSounds.default;
-    if (btn) { btn.textContent = moodInfo.label; btn.classList.add('playing'); }
-    showToast(`${moodInfo.name} playing 🌿`);
-  } catch(e) { showToast('Sound not available on this device'); }
-}
-
-function stopSound() {
-  soundNodes.forEach(n => { try { n.disconnect(); } catch(e){} });
-  soundNodes = [];
-  if (audioCtx) { audioCtx.close(); audioCtx = null; }
-  soundPlaying = false;
-  const btn = document.getElementById('soundBtn');
-  if (btn) { btn.textContent = '🎵 Sounds off'; btn.classList.remove('playing'); }
+  if (enabled) { btn.textContent='🎵 Music on'; btn.classList.add('playing'); }
+  else { btn.textContent='🎵 Music off'; btn.classList.remove('playing'); }
 }
 
 // ══ AUTH ══
 function showForgot() {
-  document.getElementById('forgotForm').style.display = 'block';
-  document.getElementById('forgotWrap').style.display = 'none';
+  document.getElementById('forgotForm').style.display='block';
+  document.getElementById('forgotWrap').style.display='none';
 }
-
 async function sendReset() {
   const email = document.getElementById('forgotEmail').value.trim();
   const msgEl = document.getElementById('resetMsg');
-  if (!email) { msgEl.textContent = 'Please enter your email.'; return; }
-  const { error } = await supa.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://my-inner-grove.netlify.app/reset'
-  });
-  if (error) { msgEl.style.color='#f08080'; msgEl.textContent = error.message; }
-  else { msgEl.style.color='var(--leaf)'; msgEl.textContent = '🌿 Reset link sent! Check your email.'; }
+  if (!email) { msgEl.textContent='Please enter your email.'; return; }
+  const { error } = await supa.auth.resetPasswordForEmail(email,{redirectTo:'https://my-inner-grove.netlify.app/reset'});
+  if (error) { msgEl.style.color='#f08080'; msgEl.textContent=error.message; }
+  else { msgEl.style.color='var(--leaf)'; msgEl.textContent='🌿 Reset link sent! Check your email.'; }
 }
-
 function setAuthTab(mode, el) {
   state.authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  const nameField = document.getElementById('authName');
-  nameField.style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('authName').style.display = mode==='signup'?'block':'none';
   document.getElementById('authError').textContent = '';
 }
-
 async function handleAuth() {
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value.trim();
   const name = document.getElementById('authName').value.trim();
   const errEl = document.getElementById('authError');
   errEl.textContent = '';
-
-  if (!email || !pass) { errEl.textContent = 'Please enter email and password.'; return; }
-
-  if (state.authMode === 'signup') {
-    const { data, error } = await supa.auth.signUp({ email, password: pass });
-    if (error) { errEl.textContent = error.message; return; }
+  if (!email||!pass) { errEl.textContent='Please enter email and password.'; return; }
+  if (state.authMode==='signup') {
+    const { data, error } = await supa.auth.signUp({email,password:pass});
+    if (error) { errEl.textContent=error.message; return; }
     if (data.user) {
-      await supa.from('grove_profiles').insert({ id: data.user.id, name: name || 'wanderer', streak: 0, last_active: new Date().toISOString().split('T')[0] });
-      // Send welcome email
-      try {
-        await fetch(`${SUPA_URL}/functions/v1/send-welcome-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}` },
-          body: JSON.stringify({ email, name: name || 'wanderer' })
-        });
-      } catch(e) { /* silently fail — don't block signup */ }
+      await supa.from('grove_profiles').insert({id:data.user.id,name:name||'wanderer',streak:0,last_active:new Date().toISOString().split('T')[0]});
       await loadApp(data.user);
     }
   } else {
-    const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
-    if (error) { errEl.textContent = error.message; return; }
+    const { data, error } = await supa.auth.signInWithPassword({email,password:pass});
+    if (error) { errEl.textContent=error.message; return; }
     if (data.user) await loadApp(data.user);
   }
 }
@@ -926,31 +1097,29 @@ async function handleAuth() {
 // ══ LOAD APP ══
 async function loadApp(user) {
   state.user = user;
-
-  // Load profile
-  const { data: profile } = await supa.from('grove_profiles').select('*').eq('id', user.id).single();
+  const { data: profile } = await supa.from('grove_profiles').select('*').eq('id',user.id).single();
   state.profile = profile;
-
-  // Update streak
   await updateStreak();
-
-  // Load today's completions
   const today = new Date().toISOString().split('T')[0];
-  const { data: completions } = await supa.from('grove_completions').select('*').eq('user_id', user.id).eq('date', today);
-  state.todayCompletions = completions?.map(c => c.activity_key) || [];
+  const { data: completions } = await supa.from('grove_completions').select('*').eq('user_id',user.id).eq('date',today);
+  state.todayCompletions = completions?.map(c=>c.activity_key)||[];
+  const { data: blooms } = await supa.from('grove_completions').select('*').eq('user_id',user.id).order('completed_at',{ascending:false}).limit(80);
+  state.allBlooms = blooms||[];
+  const { data: vibes } = await supa.from('grove_vibes').select('*').eq('user_id',user.id);
+  state.vibes = vibes||[];
 
-  // Load all blooms for journal
-  const { data: blooms } = await supa.from('grove_completions').select('*').eq('user_id', user.id).order('completed_at', { ascending: false }).limit(50);
-  state.allBlooms = blooms || [];
+  // Set topbar
+  document.getElementById('userName').textContent = profile?.name||'wanderer';
+  document.getElementById('streakCount').textContent = profile?.streak||0;
+  const now = new Date();
+  document.getElementById('topbarDate').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
 
-  // Load vibes
-  const { data: vibes } = await supa.from('grove_vibes').select('*').eq('user_id', user.id);
-  state.vibes = vibes || [];
+  // Moon phase
+  const moon = getMoonPhase();
+  document.getElementById('moonPhaseIcon').textContent = moon.icon;
+  document.getElementById('moonPhaseLabel').textContent = moon.label;
 
-  // Render
-  document.getElementById('userName').textContent = profile?.name || 'wanderer';
-  document.getElementById('streakCount').textContent = profile?.streak || 0;
-  document.getElementById('bottomNav').style.display = 'flex';
+  document.getElementById('bottomNav').style.display='flex';
 
   renderActivities();
   renderGroveScene();
@@ -960,34 +1129,29 @@ async function loadApp(user) {
   renderVibes();
   renderSuggested();
   renderJournal();
-  if (state.vibes && state.vibes.length >= 2) setTimeout(generateVibePoetry, 1000);
+  renderOnThisDay();
+  if (state.vibes.length>=2) setTimeout(generateVibePoetry,1200);
 
   showScreen('app');
-  setTimeout(() => showGroveWelcome(), 700);
+  setTimeout(()=>showGroveWelcome(),800);
   applyWinddownMode();
   checkMilestones();
-  // Start ambient forest music 🌿
-  setTimeout(() => SoundSystem.startAmbient(), 1500);
+  setTimeout(()=>SoundSystem.startAmbient(),1600);
   maybeShowGroveMessage();
+  spawnCompanion();
 
-  // Fetch AI affirmations
-  setTimeout(() => fetchAffirm('affirm'), 800);
-  setTimeout(() => fetchAffirm('prayer'), 1400);
+  setTimeout(()=>fetchAffirm('affirm'),900);
+  setTimeout(()=>fetchAffirm('prayer'),1600);
 }
 
 async function updateStreak() {
   if (!state.profile) return;
   const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-  let streak = state.profile.streak || 0;
-
-  if (state.profile.last_active === yesterday) {
-    streak += 1;
-  } else if (state.profile.last_active !== today) {
-    streak = 1;
-  }
-
-  await supa.from('grove_profiles').update({ streak, last_active: today, longest_streak: Math.max(streak, state.profile.longest_streak || 0) }).eq('id', state.user.id);
+  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+  let streak = state.profile.streak||0;
+  if (state.profile.last_active===yesterday) streak+=1;
+  else if (state.profile.last_active!==today) streak=1;
+  await supa.from('grove_profiles').update({streak,last_active:today,longest_streak:Math.max(streak,state.profile.longest_streak||0)}).eq('id',state.user.id);
   state.profile.streak = streak;
   document.getElementById('streakCount').textContent = streak;
 }
@@ -995,96 +1159,63 @@ async function updateStreak() {
 // ══ ACTIVITIES ══
 function renderActivities() {
   const container = document.getElementById('activitiesContainer');
-  const doneCount = state.todayCompletions.length;
-
-  if (doneCount >= 5) {
-    container.innerHTML = `<div class="all-done-msg"><span>🌟</span>You completed all 5 rituals today, ${state.profile?.name || 'love'}.<br>Your grove is glowing. Come back tomorrow. 🌿</div>`;
+  if (state.todayCompletions.length>=5) {
+    container.innerHTML=`<div class="all-done-msg"><span>🌟</span>You completed all 5 rituals today, ${state.profile?.name||'love'}.<br>Your grove is glowing. Come back tomorrow. 🌿</div>`;
     return;
   }
-
-  // Group by category
-  const categories = [...new Set(activities.map(a => a.category))];
-  let html = '';
-
-  categories.forEach(cat => {
-    const catActivities = activities.filter(a => a.category === cat);
-    html += `<div class="category-label">${cat}</div><div class="activities-grid">`;
-    catActivities.forEach(a => {
+  const categories=[...new Set(activities.map(a=>a.category))];
+  let html='';
+  categories.forEach(cat=>{
+    const catActs = activities.filter(a=>a.category===cat);
+    html+=`<div class="category-label">${cat}</div><div class="activities-section">`;
+    catActs.forEach(a=>{
       const isDone = state.todayCompletions.includes(a.key);
-      html += `
-        <div class="activity-item ${isDone ? 'completed' : ''}" 
-             onclick="${isDone ? '' : `selectActivity('${a.key}')`}"
-             id="act-${a.key}">
-          <div class="activity-emoji">${a.emoji}</div>
-          <div class="activity-info">
-            <div class="activity-name">${a.name}</div>
-            <div class="activity-desc">${a.desc}</div>
-          </div>
-          <div class="activity-check">${isDone ? '✓' : ''}</div>
-        </div>`;
+      html+=`<div class="activity-item ${isDone?'completed':''}" onclick="${isDone?'':'`selectActivity(\''+a.key+'\')`'}" id="act-${a.key}">
+        <div class="activity-emoji">${a.emoji}</div>
+        <div class="activity-info">
+          <div class="activity-name">${a.name}</div>
+          <div class="activity-desc">${a.desc}</div>
+        </div>
+        <div class="activity-check">${isDone?'✓':''}</div>
+      </div>`;
     });
-    html += '</div>';
+    html+='</div>';
   });
-
-  html += `<button class="complete-btn" id="completeBtn" onclick="completeSelected()" disabled>Mark Complete & Bloom 🌿</button>`;
-  container.innerHTML = html;
-  updateDots();
+  html+=`<button class="complete-btn" id="completeBtn" onclick="completeSelected()" disabled>Mark Complete &amp; Bloom 🌿</button>`;
+  container.innerHTML=html;
 }
 
 let selectedActivities = new Set();
-
 function selectActivity(key) {
   const doneCount = state.todayCompletions.length;
-  const remaining = 5 - doneCount;
-  const el = document.getElementById('act-' + key);
-  if (!el || el.classList.contains('completed')) return;
-
+  const remaining = 5-doneCount;
+  const el = document.getElementById('act-'+key);
+  if (!el||el.classList.contains('completed')) return;
   if (selectedActivities.has(key)) {
     selectedActivities.delete(key);
     el.classList.remove('selected');
-    el.querySelector('.activity-check').textContent = '';
+    el.querySelector('.activity-check').textContent='';
   } else {
-    if (selectedActivities.size >= remaining) {
-      showToast(`Select up to ${remaining} more ritual${remaining===1?'':'s'} 🌿`);
-      return;
-    }
+    if (selectedActivities.size>=remaining) { showToast(`Select up to ${remaining} more ritual${remaining===1?'':'s'} 🌿`); return; }
     selectedActivities.add(key);
     el.classList.add('selected');
-    el.querySelector('.activity-check').textContent = '✓';
+    el.querySelector('.activity-check').textContent='✓';
   }
-
-  const btn = document.getElementById('completeBtn');
-  if (btn) btn.disabled = selectedActivities.size === 0;
+  const btn=document.getElementById('completeBtn');
+  if (btn) btn.disabled=selectedActivities.size===0;
 }
-
 async function completeSelected() {
-  if (selectedActivities.size === 0) return;
+  if (selectedActivities.size===0) return;
   const today = new Date().toISOString().split('T')[0];
-
   for (const key of selectedActivities) {
-    const activity = activities.find(a => a.key === key);
+    const activity = activities.find(a=>a.key===key);
     if (!activity) continue;
-
-    await supa.from('grove_completions').insert({
-      user_id: state.user.id,
-      activity_key: key,
-      activity_label: activity.name,
-      activity_emoji: activity.emoji,
-      date: today,
-    });
-
+    await supa.from('grove_completions').insert({user_id:state.user.id,activity_key:key,activity_label:activity.name,activity_emoji:activity.emoji,date:today});
     state.todayCompletions.push(key);
-    state.allBlooms.unshift({
-      activity_emoji: activity.emoji,
-      activity_label: activity.name,
-      completed_at: new Date().toISOString(),
-    });
+    state.allBlooms.unshift({activity_emoji:activity.emoji,activity_label:activity.name,completed_at:new Date().toISOString()});
   }
-
-  // Update total completions
-  const newTotal = (state.profile?.total_completions || 0) + selectedActivities.size;
-  await supa.from('grove_profiles').update({ total_completions: newTotal }).eq('id', state.user.id);
-
+  const newTotal=(state.profile?.total_completions||0)+selectedActivities.size;
+  await supa.from('grove_profiles').update({total_completions:newTotal}).eq('id',state.user.id);
   selectedActivities.clear();
   renderActivities();
   renderGroveScene();
@@ -1094,214 +1225,303 @@ async function completeSelected() {
   checkMilestones();
   showToast(getGroveToast());
   SoundSystem.chime();
-  spawnSparkles(); // ✨ magic particles!
+  spawnSparkles();
 }
-
-function updateDots() {
-  const dots = document.querySelectorAll('.daily-dot');
-  const count = state.todayCompletions.length;
-  dots.forEach((d, i) => d.classList.toggle('done', i < count));
-  const countEl = document.getElementById('dailyCount');
-  if (countEl) countEl.textContent = `${count} / 5 completed`;
-}
-
 function updateProgress() {
-  const count = Math.min(state.todayCompletions.length, 5);
-  document.getElementById('progressFill').style.width = (count / 5 * 100) + '%';
-  document.getElementById('progressLabel').textContent = `✦ ${count} of 5 rituals today ✦`;
+  const count=Math.min(state.todayCompletions.length,5);
+  document.getElementById('progressFill').style.width=(count/5*100)+'%';
+  document.getElementById('progressLabel').textContent=`✦ ${count} of 5 rituals complete ✦`;
 }
 
-// ══ ILLUSTRATED GROVE SCENE ══
+// ══ MAGICAL GROVE SCENE ══
 const timeThemes = {
-  dawn: {
-    skyTop:'#1a0a2e', skyBot:'#f0784a', horizon:'#f0c878',
-    groundTop:'#4a7a2a', groundBot:'#2a5a10',
-    mistColor:'rgba(255,220,180,0.18)', moonEmoji:'🌅', ambientLight:'rgba(240,200,120,0.12)',
-    label:'🌅 Dawn'
-  },
-  day: {
-    skyTop:'#1a4a8a', skyBot:'#5ab0f0', horizon:'#a8d8f0',
-    groundTop:'#5a9a2a', groundBot:'#2a6a10',
-    mistColor:'rgba(200,240,255,0.12)', moonEmoji:'☀️', ambientLight:'rgba(200,240,255,0.08)',
-    label:'☀️ Day'
-  },
-  dusk: {
-    skyTop:'#1a0a20', skyBot:'#8b3a6a', horizon:'#d4784a',
-    groundTop:'#3a6a1a', groundBot:'#1a4008',
-    mistColor:'rgba(212,120,80,0.15)', moonEmoji:'🌆', ambientLight:'rgba(200,120,80,0.1)',
-    label:'🌆 Dusk'
-  },
-  night: {
-    skyTop:'#050810', skyBot:'#0d1a2a', horizon:'#1a2e1a',
-    groundTop:'#1a3a0a', groundBot:'#0d1a05',
-    mistColor:'rgba(180,220,200,0.1)', moonEmoji:'🌙', ambientLight:'rgba(212,168,67,0.06)',
-    label:'🌙 Night'
-  }
+  dawn:{skyTop:'#180828',skyMid:'#d4502a',skyBot:'#f0a850',groundTop:'#3a6018',groundBot:'#1e3a0a',mistColor:'rgba(240,190,130,0.22)',label:'🌅 Dawn'},
+  day:{skyTop:'#0a2a6a',skyMid:'#2a78c8',skyBot:'#78c0e8',groundTop:'#4a8c1e',groundBot:'#1e5408',mistColor:'rgba(180,230,255,0.14)',label:'☀️ Day'},
+  dusk:{skyTop:'#0e0820',skyMid:'#8c2860',skyBot:'#d4602a',groundTop:'#2a5414',groundBot:'#122808',mistColor:'rgba(200,100,70,0.18)',label:'🌆 Dusk'},
+  night:{skyTop:'#020408',skyMid:'#080f1a',skyBot:'#101e14',groundTop:'#142808',groundBot:'#080f04',mistColor:'rgba(160,210,180,0.1)',label:'🌙 Night'},
 };
-
 const seasonColors = {
-  spring: { leafA:'#5ab050', leafB:'#8fd068', trunkA:'#5a3a20', trunkB:'#7a5030', flowerColor:'#f0a0c0', label:'🌸 Spring' },
-  summer: { leafA:'#2a7a2a', leafB:'#4aa040', trunkA:'#4a3018', trunkB:'#6a4828', flowerColor:'#f0e050', label:'☀️ Summer' },
-  autumn: { leafA:'#c04a10', leafB:'#e07820', trunkA:'#5a3a20', trunkB:'#7a5030', flowerColor:'#e09030', label:'🍂 Autumn' },
-  winter: { leafA:'#2a5a6a', leafB:'#3a7a8a', trunkA:'#3a3048', trunkB:'#5a4860', flowerColor:'#d0e8f8', label:'❄️ Winter' },
+  spring:{leafA:'#4aaa3a',leafB:'#78cc58',leafC:'#a0e878',trunkA:'#4a3018',trunkB:'#6a4828',blossom:'#f0b0d0',grass:'#5ab040',label:'🌸 Spring'},
+  summer:{leafA:'#1a7020',leafB:'#2a9030',leafC:'#4aaa40',trunkA:'#3a2810',trunkB:'#5a4020',blossom:'#f8e840',grass:'#3a8820',label:'☀️ Summer'},
+  autumn:{leafA:'#b83a0a',leafB:'#d86018',leafC:'#f0901a',trunkA:'#4a3018',trunkB:'#6a4828',blossom:'#d07818',grass:'#6a7820',label:'🍂 Autumn'},
+  winter:{leafA:'#284a5a',leafB:'#3a6878',leafC:'#4a8090',trunkA:'#2a2838',trunkB:'#3a3850',blossom:'#c8e0f0',grass:'#283830',label:'❄️ Winter'},
 };
 
 function drawForest(total, timeKey, seasonKey) {
-  const W = 400, H = 220;
-  const th = timeThemes[timeKey] || timeThemes.night;
-  const sc = seasonColors[seasonKey] || seasonColors.autumn;
+  const W=400, H=260;
+  const th = timeThemes[timeKey]||timeThemes.night;
+  const sc = seasonColors[seasonKey]||seasonColors.autumn;
 
-  // Sky gradient id unique
-  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${th.skyTop}"/>
-      <stop offset="70%" stop-color="${th.skyBot}"/>
-      <stop offset="100%" stop-color="${th.horizon}"/>
+      <stop offset="55%" stop-color="${th.skyMid}"/>
+      <stop offset="100%" stop-color="${th.skyBot}"/>
     </linearGradient>
-    <linearGradient id="groundG" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${th.groundTop}"/>
       <stop offset="100%" stop-color="${th.groundBot}"/>
     </linearGradient>
-    <linearGradient id="mistG" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="transparent"/>
-      <stop offset="50%" stop-color="${th.mistColor}"/>
+      <stop offset="40%" stop-color="${th.mistColor}"/>
       <stop offset="100%" stop-color="transparent"/>
     </linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>`;
+    <radialGradient id="glow1" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="rgba(255,232,160,0.35)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="rgba(240,200,80,0.4)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <filter id="softBlur"><feGaussianBlur stdDeviation="2"/></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="treeglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <clipPath id="sceneClip"><rect width="${W}" height="${H}"/></clipPath>
+  </defs>
+  <g clip-path="url(#sceneClip)">`;
 
-  // Sky
-  svg += `<rect width="${W}" height="${H}" fill="url(#skyG)"/>`;
+  // ── SKY ──
+  svg+=`<rect width="${W}" height="${H}" fill="url(#sky)"/>`;
 
   // Stars (night/dawn/dusk)
-  if (timeKey === 'night' || timeKey === 'dawn' || timeKey === 'dusk') {
-    const starCount = timeKey === 'night' ? 40 : 15;
-    for (let i = 0; i < starCount; i++) {
-      const sx = 10 + Math.floor(Math.sin(i*137)*180+180) % (W-20);
-      const sy = 4 + Math.floor(Math.cos(i*97)*40+40) % 70;
-      const sr = i%5===0?1.5:1;
-      const opacity = timeKey==='night'?0.8:0.4;
-      svg += `<circle cx="${sx}" cy="${sy}" r="${sr}" fill="white" opacity="${opacity}"/>`;
+  if (timeKey==='night'||timeKey==='dawn'||timeKey==='dusk') {
+    const starCount = timeKey==='night'?55:20;
+    for (let i=0;i<starCount;i++) {
+      const sx=5+(Math.sin(i*137.508)*0.5+0.5)*(W-10);
+      const sy=2+(Math.cos(i*97.31)*0.5+0.5)*80;
+      const r=i%7===0?1.8:i%3===0?1.2:0.8;
+      const op=timeKey==='night'?(0.5+Math.random()*0.5):(0.2+Math.random()*0.3);
+      svg+=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${r}" fill="white" opacity="${op.toFixed(2)}"/>`;
+      // Bigger stars get a glow ring
+      if (i%9===0) svg+=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${r*3}" fill="white" opacity="0.04"/>`;
     }
   }
 
-  // Sun or Moon
-  if (timeKey === 'day') {
-    svg += `<circle cx="340" cy="38" r="22" fill="#FFE566" opacity="0.95" filter="url(#glow)"/>
-    <circle cx="340" cy="38" r="28" fill="#FFE566" opacity="0.15"/>`;
-  } else if (timeKey === 'dawn' || timeKey === 'dusk') {
-    svg += `<circle cx="340" cy="60" r="28" fill="#F09050" opacity="0.85" filter="url(#glow)"/>
-    <circle cx="340" cy="60" r="38" fill="#F09050" opacity="0.12"/>`;
+  // Shooting star (night only, 1 in 3 renders)
+  if (timeKey==='night' && total%3===0) {
+    svg+=`<line x1="320" y1="15" x2="260" y2="35" stroke="white" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+    <circle cx="320" cy="15" r="1.5" fill="white" opacity="0.6"/>`;
+  }
+
+  // ── CELESTIAL BODY ──
+  if (timeKey==='day') {
+    // Sun with rays
+    svg+=`<circle cx="340" cy="42" r="32" fill="#FFE566" opacity="0.12" filter="url(#softBlur)"/>
+    <circle cx="340" cy="42" r="20" fill="#FFE566" opacity="0.9" filter="url(#glow)"/>`;
+    [0,45,90,135,180,225,270,315].forEach((angle,i)=>{
+      const rad=angle*Math.PI/180;
+      const x1=340+Math.cos(rad)*24;const y1=42+Math.sin(rad)*24;
+      const x2=340+Math.cos(rad)*(30+i%2*4);const y2=42+Math.sin(rad)*(30+i%2*4);
+      svg+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#FFE566" stroke-width="2" opacity="0.6" stroke-linecap="round"/>`;
+    });
+  } else if (timeKey==='dawn'||timeKey==='dusk') {
+    const sunY=timeKey==='dawn'?72:68;
+    svg+=`<circle cx="340" cy="${sunY}" r="50" fill="#F09050" opacity="0.1" filter="url(#softBlur)"/>
+    <circle cx="340" cy="${sunY}" r="26" fill="#F09050" opacity="0.88" filter="url(#glow)"/>
+    <circle cx="340" cy="${sunY}" r="36" fill="#F09050" opacity="0.12"/>`;
+    // Horizon glow
+    svg+=`<ellipse cx="${W/2}" cy="135" rx="200" ry="50" fill="${timeKey==='dawn'?'rgba(240,168,80,0.15)':'rgba(200,80,60,0.12)'}" filter="url(#softBlur)"/>`;
   } else {
-    // Moon crescent
-    svg += `<circle cx="340" cy="36" r="18" fill="#FFE8A0" opacity="0.9" filter="url(#glow)"/>
-    <circle cx="350" cy="30" r="15" fill="${th.skyTop}" opacity="1"/>
-    <circle cx="340" cy="36" r="22" fill="#FFE8A0" opacity="0.08"/>`;
+    // Moon with crescent effect and glow halo
+    svg+=`<circle cx="345" cy="38" r="26" fill="rgba(255,232,160,0.12)" filter="url(#softBlur)"/>
+    <circle cx="345" cy="38" r="17" fill="#FFE8A0" opacity="0.92" filter="url(#glow)"/>
+    <circle cx="356" cy="32" r="14" fill="${th.skyTop}" opacity="1"/>
+    <circle cx="345" cy="38" r="21" fill="#FFE8A0" opacity="0.06"/>`;
+    // Stars around moon
+    svg+=`<circle cx="318" cy="22" r="1" fill="#FFE8A0" opacity="0.5"/>
+    <circle cx="372" cy="48" r="0.8" fill="#FFE8A0" opacity="0.4"/>
+    <circle cx="328" cy="55" r="0.7" fill="white" opacity="0.5"/>`;
   }
 
-  // Ambient light overlay
-  svg += `<rect width="${W}" height="${H}" fill="${th.ambientLight}"/>`;
+  // ── BACKGROUND MOUNTAIN SILHOUETTE ──
+  svg+=`<path d="M0,120 Q40,80 80,95 Q120,110 160,75 Q200,40 240,70 Q280,100 320,78 Q360,56 400,82 L400,140 L0,140 Z" fill="rgba(8,20,8,0.6)"/>`;
+  svg+=`<path d="M0,132 Q30,112 65,118 Q100,124 140,105 Q180,86 210,100 Q240,114 275,98 Q310,82 340,92 Q370,102 400,95 L400,145 L0,145 Z" fill="rgba(12,28,12,0.7)"/>`;
 
-  // Ground layers
-  svg += `<rect x="0" y="165" width="${W}" height="${H-165}" fill="url(#groundG)"/>`;
-  // Ground texture bumps
-  svg += `<ellipse cx="80" cy="168" rx="60" ry="8" fill="${th.groundTop}" opacity="0.5"/>
-  <ellipse cx="220" cy="170" rx="80" ry="7" fill="${th.groundTop}" opacity="0.4"/>
-  <ellipse cx="360" cy="167" rx="55" ry="8" fill="${th.groundTop}" opacity="0.5"/>`;
+  // ── BACK FOG LAYER ──
+  svg+=`<rect x="0" y="120" width="${W}" height="30" fill="url(#mist)" opacity="0.7"/>`;
 
-  // Grass tufts
-  for (let i = 0; i < 18; i++) {
-    const gx = 10 + (i * 22);
-    const gy = 165;
-    svg += `<path d="M${gx},${gy} Q${gx-3},${gy-8} ${gx},${gy-4} Q${gx+3},${gy-8} ${gx+2},${gy}" fill="${sc.leafA}" opacity="0.7"/>`;
+  // ── GROUND ──
+  svg+=`<rect x="0" y="185" width="${W}" height="${H-185}" fill="url(#ground)"/>`;
+
+  // Ground highlights (gentle hills)
+  svg+=`<ellipse cx="80" cy="188" rx="90" ry="10" fill="${sc.grass}" opacity="0.35"/>
+  <ellipse cx="220" cy="190" rx="110" ry="9" fill="${sc.grass}" opacity="0.28"/>
+  <ellipse cx="360" cy="187" rx="80" ry="10" fill="${sc.grass}" opacity="0.32"/>`;
+
+  // Grass blades — hand-crafted feel
+  for (let i=0;i<24;i++) {
+    const gx=8+i*17;
+    const gy=186;
+    const h=6+Math.sin(i*1.7)*4;
+    const lean=(i%3===0)?-1:(i%3===1)?1:0;
+    svg+=`<path d="M${gx},${gy} Q${gx+lean*3},${gy-h*0.6} ${gx+lean*4},${gy-h}" stroke="${sc.leafA}" stroke-width="1.2" fill="none" opacity="0.7"/>`;
   }
 
-  // Mushrooms (appear after 3 completions)
-  if (total >= 3) {
-    svg += `<circle cx="60" cy="164" r="7" fill="#d45030" opacity="0.9"/>
-    <circle cx="60" cy="164" r="5" fill="#e06040" opacity="0.8"/>
-    <circle cx="63" cy="162" r="1.5" fill="white" opacity="0.7"/>
-    <circle cx="58" cy="163" r="1" fill="white" opacity="0.7"/>
-    <rect x="58" y="164" width="4" height="7" rx="1" fill="#e8d0b0" opacity="0.9"/>`;
-
-    svg += `<circle cx="352" cy="163" r="6" fill="#a03020" opacity="0.9"/>
-    <circle cx="355" cy="161" r="1.5" fill="white" opacity="0.7"/>
-    <rect x="350" y="163" width="4" height="6" rx="1" fill="#e8d0b0" opacity="0.9"/>`;
-  }
-
-  // Flowers (appear after 2)
-  if (total >= 2) {
-    const flowers = [{x:100,y:166},{x:160,y:168},{x:280,y:165},{x:320,y:167}];
-    flowers.slice(0, Math.min(total, flowers.length)).forEach(f => {
-      svg += `<circle cx="${f.x}" cy="${f.y}" r="4" fill="${sc.flowerColor}" opacity="0.85"/>
-      <circle cx="${f.x}" cy="${f.y}" r="2" fill="#f8f0a0" opacity="0.9"/>`;
+  // ── FALLEN LEAVES (autumn/spring) ──
+  if (seasonKey==='autumn') {
+    const leafPositions=[{x:45,y:192},{x:88,y:188},{x:155,y:193},{x:210,y:190},{x:298,y:191},{x:352,y:188}];
+    leafPositions.forEach((l,i)=>{
+      const angle=(i*47)%360;
+      svg+=`<ellipse cx="${l.x}" cy="${l.y}" rx="5" ry="3" fill="${sc.leafC}" opacity="0.7" transform="rotate(${angle},${l.x},${l.y})"/>`;
     });
   }
 
-  // Trees — draw based on completions
+  // ── MUSHROOMS (after 3 completions) ──
+  if (total>=3) {
+    [[55,187],[358,186],[168,191]].slice(0,Math.min(total-2,3)).forEach(([mx,my])=>{
+      const isRed = mx<200;
+      svg+=`<rect x="${mx-2}" y="${my}" width="4" height="7" rx="1.5" fill="#e8d4b0" opacity="0.9"/>
+      <ellipse cx="${mx}" cy="${my}" rx="7" ry="4" fill="${isRed?'#cc3a18':'#9a3a18'}" opacity="0.9"/>
+      <circle cx="${mx+2}" cy="${my-1}" r="1.2" fill="white" opacity="0.7"/>
+      <circle cx="${mx-2}" cy="${my-0.5}" r="0.8" fill="white" opacity="0.6"/>`;
+    });
+  }
+
+  // ── WILDFLOWERS (after 2) ──
+  if (total>=2) {
+    const flowerSpots=[{x:95,y:188},{x:148,y:190},{x:245,y:187},{x:302,y:189},{x:185,y:191},{x:72,y:190}];
+    flowerSpots.slice(0,Math.min(total,flowerSpots.length)).forEach((f,fi)=>{
+      const colors=[sc.blossom,'#f8d870','#a0d8a0','#e0a0c8'];
+      const fc=colors[fi%colors.length];
+      svg+=`<line x1="${f.x}" y1="${f.y}" x2="${f.x}" y2="${f.y-8}" stroke="${sc.leafA}" stroke-width="1" opacity="0.7"/>`;
+      [0,72,144,216,288].forEach(a=>{
+        const rad=a*Math.PI/180;
+        const px=f.x+Math.cos(rad)*3.5;
+        const py=(f.y-8)+Math.sin(rad)*3.5;
+        svg+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="2.5" ry="1.8" fill="${fc}" opacity="0.85" transform="rotate(${a},${px.toFixed(1)},${py.toFixed(1)})"/>`;
+      });
+      svg+=`<circle cx="${f.x}" cy="${f.y-8}" r="2" fill="#f8e870" opacity="0.9"/>`;
+    });
+  }
+
+  // ── TREES — magical and abundant ──
   const treeSlots = [
-    {x:200, h:110, w:50, layer:1},  // center back — first
-    {x:130, h:90, w:42, layer:1},   // left back
-    {x:270, h:95, w:44, layer:1},   // right back
-    {x:80,  h:75, w:36, layer:2},   // far left
-    {x:330, h:80, w:38, layer:2},   // far right
-    {x:160, h:100, w:46, layer:2},  // center left front
-    {x:240, h:98, w:44, layer:2},   // center right front
-    {x:50,  h:60, w:30, layer:3},   // edge left
-    {x:360, h:65, w:32, layer:3},   // edge right
+    // Back layer (layer 0)
+    {x:200,h:140,w:62,layer:0,leanX:0},
+    {x:140,h:118,w:54,layer:0,leanX:-2},
+    {x:265,h:122,w:56,layer:0,leanX:2},
+    {x:88,h:98,w:46,layer:0,leanX:-3},
+    {x:322,h:106,w:50,layer:0,leanX:3},
+    // Mid layer (layer 1)
+    {x:168,h:130,w:60,layer:1,leanX:-1},
+    {x:236,h:126,w:58,layer:1,leanX:1},
+    {x:58,h:88,w:40,layer:1,leanX:-4},
+    {x:352,h:94,w:44,layer:1,leanX:4},
+    {x:110,h:112,w:52,layer:1,leanX:-2},
+    {x:294,h:108,w:50,layer:1,leanX:2},
+    // Front layer (layer 2)
+    {x:38,h:72,w:34,layer:2,leanX:-5},
+    {x:375,h:76,w:36,layer:2,leanX:5},
+    {x:182,h:138,w:64,layer:2,leanX:0},
+    {x:224,h:132,w:60,layer:2,leanX:1},
   ];
 
-  const treesToDraw = treeSlots.slice(0, Math.min(total, treeSlots.length));
+  const treesToDraw = treeSlots.slice(0, Math.min(total+1, treeSlots.length));
+  const groundY = 188;
 
-  // Draw back layer first, then front
-  [1,2,3].forEach(layer => {
-    treesToDraw.filter(t => t.layer === layer).forEach((t, ti) => {
-      const trunkW = Math.max(6, t.w * 0.18);
-      const trunkH = t.h * 0.35;
+  // Draw back then front
+  [0,1,2].forEach(layer=>{
+    treesToDraw.filter(t=>t.layer===layer).forEach((t,ti)=>{
+      const trunkW = Math.max(5, t.w*0.17);
+      const trunkH = t.h*0.38;
       const trunkX = t.x - trunkW/2;
-      const groundY = 168;
       const trunkTopY = groundY - trunkH;
-      const canopyBot = trunkTopY + 10;
+      const canopyBot = trunkTopY + 12;
       const canopyTop = groundY - t.h;
-      const canopyMid = (canopyBot + canopyTop) / 2;
-      const opacity = layer === 1 ? 0.75 : layer === 2 ? 0.9 : 1;
+      const op = layer===0?0.7:layer===1?0.88:1;
+      const lx = t.x + t.leanX; // slight lean for organic feel
 
-      // Trunk
-      svg += `<rect x="${trunkX}" y="${trunkTopY}" width="${trunkW}" height="${trunkH}" rx="${trunkW/3}" fill="${sc.trunkA}" opacity="${opacity}"/>`;
+      // Trunk with bark texture
+      svg+=`<rect x="${trunkX}" y="${trunkTopY}" width="${trunkW}" height="${trunkH}" rx="${trunkW*0.4}" fill="${sc.trunkA}" opacity="${op}"/>`;
+      // Bark line
+      svg+=`<line x1="${t.x-1}" y1="${trunkTopY+6}" x2="${t.x-1}" y2="${trunkTopY+trunkH-6}" stroke="${sc.trunkB}" stroke-width="0.8" opacity="${op*0.5}"/>`;
 
-      // Canopy — layered triangles for depth
-      const cw = t.w;
-      svg += `<polygon points="${t.x},${canopyTop} ${t.x-cw/2},${canopyBot} ${t.x+cw/2},${canopyBot}" fill="${sc.leafB}" opacity="${opacity*0.9}"/>`;
-      svg += `<polygon points="${t.x},${canopyTop+t.h*0.2} ${t.x-cw*0.55},${canopyBot+8} ${t.x+cw*0.55},${canopyBot+8}" fill="${sc.leafA}" opacity="${opacity}"/>`;
-      svg += `<polygon points="${t.x},${canopyTop+t.h*0.38} ${t.x-cw*0.58},${canopyBot+16} ${t.x+cw*0.58},${canopyBot+16}" fill="${sc.leafB}" opacity="${opacity*0.85}"/>`;
-
-      // Snow caps in winter
-      if (seasonKey === 'winter') {
-        svg += `<polygon points="${t.x},${canopyTop} ${t.x-cw*0.25},${canopyTop+t.h*0.22} ${t.x+cw*0.25},${canopyTop+t.h*0.22}" fill="white" opacity="0.7"/>`;
+      // Roots at base (artistic touch)
+      if (total>=6) {
+        [-trunkW*0.6, trunkW*0.6].forEach(rx=>{
+          svg+=`<path d="M${t.x},${groundY-4} Q${t.x+rx*0.5},${groundY+2} ${t.x+rx},${groundY+4}" stroke="${sc.trunkA}" stroke-width="2" fill="none" opacity="${op*0.6}"/>`;
+        });
       }
 
-      // Blossoms in spring
-      if (seasonKey === 'spring' && total >= 4) {
-        for (let b = 0; b < 4; b++) {
-          const bx = t.x - cw*0.3 + b * (cw*0.2);
-          const by = canopyMid + (b%2)*10;
-          svg += `<circle cx="${bx}" cy="${by}" r="3" fill="#f8b0c8" opacity="0.8"/>`;
+      // ── CANOPY — multi-layer organic triangles ──
+      const cw = t.w;
+      const layers3=[
+        {oy:0,scale:1.0,color:sc.leafB,op:op*0.85},
+        {oy:t.h*0.18,scale:1.1,color:sc.leafA,op:op*0.95},
+        {oy:t.h*0.34,scale:1.15,color:sc.leafC,op:op*0.78},
+        {oy:t.h*0.48,scale:1.08,color:sc.leafB,op:op*0.88},
+      ];
+      layers3.forEach(ll=>{
+        const topY=canopyTop+ll.oy;
+        const botY=Math.min(canopyBot+ll.oy*0.3,groundY-trunkH+10);
+        const halfW=(cw/2)*ll.scale;
+        svg+=`<polygon points="${lx},${topY} ${lx-halfW},${botY} ${lx+halfW},${botY}" fill="${ll.color}" opacity="${ll.op}"/>`;
+      });
+
+      // Ambient glow behind tall trees (night only)
+      if (timeKey==='night'&&t.h>120) {
+        svg+=`<ellipse cx="${lx}" cy="${canopyTop+t.h*0.3}" rx="${cw*0.4}" ry="${t.h*0.25}" fill="rgba(106,171,114,0.04)" filter="url(#softBlur)"/>`;
+      }
+
+      // Snow caps in winter
+      if (seasonKey==='winter') {
+        svg+=`<polygon points="${lx},${canopyTop} ${lx-cw*0.22},${canopyTop+t.h*0.2} ${lx+cw*0.22},${canopyTop+t.h*0.2}" fill="rgba(210,235,255,0.75)"/>`;
+        svg+=`<polygon points="${lx},${canopyTop+t.h*0.18} ${lx-cw*0.28},${canopyTop+t.h*0.36} ${lx+cw*0.28},${canopyTop+t.h*0.36}" fill="rgba(210,235,255,0.55)"/>`;
+      }
+
+      // Cherry blossoms in spring (abundant at high completions)
+      if (seasonKey==='spring'&&total>=4) {
+        const blossomCount=3+Math.floor(ti/2);
+        for (let b=0;b<blossomCount;b++) {
+          const bx=lx-cw*0.3+b*(cw*0.6/(blossomCount-1||1));
+          const by=canopyTop+t.h*(0.25+b%3*0.12);
+          svg+=`<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="3.5" fill="${sc.blossom}" opacity="${0.7+b%2*0.15}"/>`;
+          svg+=`<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="1.2" fill="#f8f0b0" opacity="0.9"/>`;
         }
+        // Falling petals
+        if (total>=8) {
+          for (let p=0;p<4;p++) {
+            const px=lx-20+p*12;
+            const py=canopyTop+t.h*(0.6+p*0.08);
+            svg+=`<ellipse cx="${px}" cy="${py}" rx="2" ry="1.2" fill="${sc.blossom}" opacity="0.5" transform="rotate(${p*45},${px},${py})"/>`;
+          }
+        }
+      }
+
+      // Firefly lights near treetops (night)
+      if (timeKey==='night'&&total>=5&&ti%3===0) {
+        [1,2].forEach(fl=>{
+          const fx=lx-15+fl*18;
+          const fy=canopyTop+t.h*(0.4+fl*0.15);
+          svg+=`<circle cx="${fx}" cy="${fy}" r="1.5" fill="#d4f07a" opacity="0.65"/>
+          <circle cx="${fx}" cy="${fy}" r="4" fill="#d4f07a" opacity="0.08"/>`;
+        });
+      }
+
+      // Vines hanging (summer, high completions)
+      if (seasonKey==='summer'&&total>=10&&t.h>110) {
+        svg+=`<path d="M${lx-8},${canopyBot} Q${lx-12},${canopyBot+15} ${lx-10},${canopyBot+25}" stroke="${sc.leafA}" stroke-width="1.2" fill="none" opacity="0.6"/>
+        <circle cx="${(lx-10).toFixed(0)}" cy="${(canopyBot+25).toFixed(0)}" r="2.5" fill="${sc.leafB}" opacity="0.7"/>`;
       }
     });
   });
 
-  // Mist layer
-  svg += `<rect x="0" y="145" width="${W}" height="40" fill="url(#mistG)" opacity="0.8"/>`;
+  // ── FRONT MIST / ATMOSPHERE ──
+  svg+=`<rect x="0" y="155" width="${W}" height="40" fill="url(#mist)" opacity="0.85"/>`;
 
-  // Empty message
-  if (total === 0) {
-    svg += `<text x="${W/2}" y="125" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(200,184,150,0.55)">Your grove stirs, waiting for you...</text>
-    <text x="${W/2}" y="141" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="11" fill="rgba(200,184,150,0.55)">Complete a ritual to awaken it 🌿</text>`;
+  // Ground shadow at base of scene
+  svg+=`<rect x="0" y="${H-20}" width="${W}" height="20" fill="rgba(0,0,0,0.3)"/>`;
+
+  // ── EMPTY STATE MESSAGE ──
+  if (total===0) {
+    svg+=`<text x="${W/2}" y="138" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="12" fill="rgba(200,184,150,0.5)">Your grove stirs in the quiet...</text>
+    <text x="${W/2}" y="156" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="12" fill="rgba(200,184,150,0.5)">Complete a ritual to awaken it 🌿</text>`;
   }
 
-  svg += `</svg>`;
+  svg+=`</g></svg>`;
   return svg;
 }
 
@@ -1309,724 +1529,422 @@ function renderGroveScene() {
   const total = state.allBlooms.length;
   const wrap = document.getElementById('groveSvgWrap');
   if (!wrap) return;
-
   const h = new Date().getHours();
   const timeKey = h>=5&&h<9?'dawn':h>=9&&h<17?'day':h>=17&&h<20?'dusk':'night';
-
-  if (total >= 20) state.season = 'winter';
-  else if (total >= 12) state.season = 'spring';
-  else if (total >= 5) state.season = 'summer';
-  else state.season = 'autumn';
-
+  // Season progression
+  if (total>=30) state.season='winter';
+  else if (total>=18) state.season='spring';
+  else if (total>=8) state.season='summer';
+  else state.season='autumn';
   state.timeOfDay = timeKey;
   wrap.innerHTML = drawForest(total, timeKey, state.season);
-
-  // Creatures as emoji overlaid
-  document.querySelectorAll('.scene-creature').forEach(e => e.remove());
-  const creatureEmojis = ['🦋','🦉','🦊','🐇','🦌'];
-  if (total >= 5) {
-    const count = Math.min(Math.floor(total/5), 3);
+  // Creature overlays
+  document.querySelectorAll('.scene-creature').forEach(e=>e.remove());
+  const creatures=['🦋','🦉','🦊','🐇','🦌','🐿️'];
+  if (total>=3) {
+    const count = Math.min(Math.floor(total/4)+1, 4);
     for (let i=0;i<count;i++) {
-      const c = document.createElement('div');
-      c.className = 'scene-creature';
-      c.textContent = creatureEmojis[i];
-      c.style.cssText = `left:${15+i*25}%;bottom:${55+i*10}px;animation-delay:${i*1.5}s;font-size:${16+i*2}px`;
+      const c=document.createElement('div');
+      c.className='scene-creature floating';
+      c.textContent=creatures[i%creatures.length];
+      c.style.cssText=`left:${12+i*22}%;bottom:${52+i*8}px;animation-delay:${i*1.8}s;font-size:${16+i*2}px;filter:drop-shadow(0 0 6px rgba(212,168,67,0.4));cursor:pointer;`;
+      c.onclick=()=>companionSpeak(creatures[i%creatures.length]);
       document.querySelector('.grove-scene').appendChild(c);
     }
   }
-
   updateSceneMeta();
 }
 
 function updateSceneMeta() {
-  const th = timeThemes[state.timeOfDay] || timeThemes.night;
-  const sc = seasonColors[state.season] || seasonColors.autumn;
-  document.getElementById('seasonPill').textContent = sc.label;
-  document.getElementById('timePill').textContent = th.label;
+  const th = timeThemes[state.timeOfDay]||timeThemes.night;
+  const sc = seasonColors[state.season]||seasonColors.autumn;
+  document.getElementById('seasonPill').textContent=sc.label;
+  document.getElementById('timePill').textContent=th.label;
 }
 
 function spawnSceneFireflies() {
-  const wrap = document.getElementById('sceneFlies');
-  wrap.innerHTML = '';
-  const count = Math.min(4 + state.allBlooms.length, 16);
-  for (let i = 0; i < count; i++) {
-    const f = document.createElement('div');
-    f.className = 'fly';
-    f.style.cssText = `left:${8+Math.random()*84}%;top:${8+Math.random()*72}%;--fd:${4+Math.random()*4}s;--fb:${1.5+Math.random()*2}s;--x1:${-20+Math.random()*40}px;--y1:${-20+Math.random()*20}px;--x2:${-20+Math.random()*40}px;--y2:${-40+Math.random()*20}px;--x3:${-20+Math.random()*40}px;--y3:${-30+Math.random()*20}px;--fdelay:${Math.random()*3}s`;
+  const wrap=document.getElementById('sceneFlies');
+  wrap.innerHTML='';
+  const count=Math.min(5+state.allBlooms.length*2,22);
+  for (let i=0;i<count;i++) {
+    const f=document.createElement('div');
+    f.className='fly';
+    f.style.cssText=`left:${8+Math.random()*84}%;top:${8+Math.random()*76}%;--fd:${4+Math.random()*5}s;--fb:${1.4+Math.random()*2.2}s;--x1:${-22+Math.random()*44}px;--y1:${-22+Math.random()*22}px;--x2:${-22+Math.random()*44}px;--y2:${-44+Math.random()*22}px;--x3:${-22+Math.random()*44}px;--y3:${-34+Math.random()*22}px;--fdelay:${Math.random()*4}s;width:${2+Math.random()*2}px;height:${2+Math.random()*2}px;`;
     wrap.appendChild(f);
   }
 }
 
-// ══ AI AFFIRMATIONS ══
-const aiPrompts = {
-  affirm: (name, time, vibes, date) => `You are a warm poetic wellness companion for My Inner Grove. Write a single deeply personal affirmation for ${name}. Today is ${date}, it's ${time}. ${vibes?`Their soul resonates with: ${vibes}.`:''}
-
-The affirmation must:
-- Be about their WORTH, IDENTITY, or INNER STRENGTH — not advice or actions
-- Feel like the forest itself is whispering to them
-- Be 2-3 sentences, lyrical and specific
-- Use <em> tags on 1-2 key phrases
-- End with them feeling completely held and enough
-- Sound NOTHING like a prayer or intention — this is pure affirmation of who they ARE
-
-Example style: "You were not made to be small, ${name}. The parts of you that feel too much, love too deeply, dream too wildly — those are not flaws. They are the <em>very things</em> that make you extraordinary."
-
-Reply with ONLY the affirmation. No quotes, no preamble, no sign-off.`,
-
-  prayer: (name, time, vibes, date) => `You are a gentle spiritual guide for My Inner Grove. Write a soft blessing or prayer for ${name}. Today is ${date}, it's ${time}. ${vibes?`They love: ${vibes}.`:''}
-
-The prayer must:
-- Begin with "May you..." 
-- Be about what you're CALLING IN or ASKING FOR them — blessings, protection, peace
-- Feel sacred and warm, like a candle being lit for them
-- Be 2-3 sentences, tender and specific to the time of day
-- Use <em> tags on 1-2 beautiful phrases
-- Sound NOTHING like an affirmation — this is a blessing being spoken over them
-- Be non-denominational but spiritually warm
-
-Example style: "May you be held today, ${name} — held by something <em>bigger than your worries</em> and gentler than your fears. May every door that is meant for you open with ease, and may you find rest in knowing you are deeply, completely loved."
-
-Reply with ONLY the prayer. No quotes, no preamble, no sign-off.`,
+// ══ COMPANION ══
+const companionMessages = {
+  '🦋':["Even change has its own kind of grace. 🌸","You are becoming. Trust the chrysalis.","Transformation is never comfortable — and always worth it."],
+  '🦉':["The old ones say: rest is also work. 🌙","Wisdom doesn't rush. Neither should you.","You see more than you think you do."],
+  '🦊':["You are cleverer than you give yourself credit for. 🌿","The forest knows your name.","Even the fox knows when to rest."],
+  '🐇':["Something new is just around the corner. 🌱","Your heart is braver than your fear.","Gentle things move the world too."],
+  '🦌':["Stand tall. You belong here. 🌳","The grove bows to your strength.","Ancient and new, all at once."],
+  '🐿️':["Small acts of care add up to something wild. ✨","You are gathering more than you know.","The tiniest rituals bloom the biggest groves."],
 };
+function companionSpeak(emoji) {
+  const msgs = companionMessages[emoji]||["The grove sees you. 🌿"];
+  const msg = msgs[Math.floor(Math.random()*msgs.length)];
+  // Remove old bubbles
+  document.querySelectorAll('.companion-bubble').forEach(b=>b.remove());
+  const bubble = document.createElement('div');
+  bubble.className='companion-bubble';
+  bubble.textContent=msg;
+  bubble.style.cssText='bottom:90px;left:50%;transform:translateX(-50%);z-index:20;';
+  document.querySelector('.grove-scene').appendChild(bubble);
+  setTimeout(()=>bubble.remove(),4000);
+}
+function spawnCompanion() {
+  // A gentle intro message from the grove
+  if (Math.random()>0.4) return;
+  setTimeout(()=>{
+    const greetings=["The grove missed you. Welcome back. 🌿","Something in the forest brightened. 🌟","Your energy changes everything here. ✨"];
+    const bubble=document.createElement('div');
+    bubble.className='companion-bubble';
+    bubble.textContent=greetings[Math.floor(Math.random()*greetings.length)];
+    bubble.style.cssText='bottom:75px;left:50%;transform:translateX(-50%);z-index:20;';
+    const scene=document.querySelector('.grove-scene');
+    if (scene) { scene.appendChild(bubble); setTimeout(()=>bubble.remove(),5000); }
+  },3000);
+}
 
+// ══ AI AFFIRMATIONS ══
 async function fetchAffirm(key) {
-  const el = document.getElementById(key === 'affirm' ? 'affirmText' : 'prayerText');
+  const el = document.getElementById(key==='affirm'?'affirmText':'prayerText');
   if (!el) return;
-
-  // Check daily cache first
   const today = new Date().toISOString().split('T')[0];
-  const cacheKey = `grove_${key}_${today}_${state.user?.id}`;
+  const cacheKey=`grove_${key}_${today}_${state.user?.id}`;
   const cached = localStorage.getItem(cacheKey);
-  if (cached && !el.dataset.forceRefresh) {
-    el.innerHTML = cached;
-    return;
-  }
-
-  el.innerHTML = `<span class="loading-dots">${key === 'affirm' ? 'The grove is writing for you' : 'Summoning your blessing'}<span>.</span><span>.</span><span>.</span></span>`;
-  el.dataset.forceRefresh = '';
-
-  const h = new Date().getHours();
-  const time = h<6?'late night':h<12?'morning':h<17?'afternoon':h<20?'evening':'night';
-  const vibes = state.vibes.map(v => v.label).join(', ');
-  const prompt = aiPrompts[key]?.(state.profile?.name || 'wanderer', time, vibes, today);
-  if (!prompt) return;
-
+  if (cached&&!el.dataset.forceRefresh) { el.innerHTML=cached; return; }
+  el.innerHTML=`<span class="loading-dots">${key==='affirm'?'The grove is writing for you':'Summoning your blessing'}<span>.</span><span>.</span><span>.</span></span>`;
+  el.dataset.forceRefresh='';
+  const h=new Date().getHours();
+  const time=h<6?'late night':h<12?'morning':h<17?'afternoon':h<20?'evening':'night';
+  const vibes=state.vibes.map(v=>v.label).join(', ');
+  const name=state.profile?.name||'wanderer';
+  const prompts={
+    affirm:`You are a warm poetic wellness companion for My Inner Grove. Write a single deeply personal affirmation for ${name}. Today is ${today}, it's ${time}. ${vibes?`Their soul resonates with: ${vibes}.`:''}
+The affirmation must feel like the forest itself is whispering to them — lyrical, specific, 2-3 sentences.
+Use <em> tags on 1-2 key phrases. About their worth, identity, or inner strength.
+End with them feeling completely held and enough. Reply with ONLY the affirmation.`,
+    prayer:`You are a gentle spiritual guide for My Inner Grove. Write a soft blessing for ${name}. Today is ${today}, it's ${time}. ${vibes?`They love: ${vibes}.`:''}
+Begin with "May you..." — 2-3 sentences, tender, sacred, warm.
+Use <em> tags on 1-2 beautiful phrases. Non-denominational but spiritually warm.
+Reply with ONLY the blessing.`
+  };
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompts[key]}]})
     });
-    const data = await res.json();
-    const text = data.content?.find(b=>b.type==='text')?.text?.trim();
+    const data=await res.json();
+    const text=data.content?.find(b=>b.type==='text')?.text?.trim();
     if (text) {
-      // Save to daily cache
-      localStorage.setItem(cacheKey, text);
-      el.innerHTML = '';
-      let i = 0;
-      const interval = setInterval(() => {
-        if (i < text.length) { el.innerHTML = text.substring(0, i+1); i++; }
-        else clearInterval(interval);
-      }, 16);
+      localStorage.setItem(cacheKey,text);
+      el.innerHTML='';let i=0;
+      const iv=setInterval(()=>{if(i<text.length){el.innerHTML=text.substring(0,i+1);i++;}else clearInterval(iv);},15);
     }
-  } catch { el.innerHTML = 'The grove speaks in stillness. You are enough, exactly as you are. 🌿'; }
+  } catch { el.innerHTML='You are held, exactly as you are, in this moment. The grove says: enough. 🌿'; }
 }
-
-// Force refresh when user hits ↻
 function refreshAffirm(key) {
-  const el = document.getElementById(key === 'affirm' ? 'affirmText' : 'prayerText');
-  if (el) el.dataset.forceRefresh = 'true';
-  const today = new Date().toISOString().split('T')[0];
-  const cacheKey = `grove_${key}_${today}_${state.user?.id}`;
-  localStorage.removeItem(cacheKey);
+  const el=document.getElementById(key==='affirm'?'affirmText':'prayerText');
+  if (el) el.dataset.forceRefresh='true';
+  localStorage.removeItem(`grove_${key}_${new Date().toISOString().split('T')[0]}_${state.user?.id}`);
   fetchAffirm(key);
 }
-
-function completeAffirm(event, type='affirm') {
-  const btn = event.target;
-  btn.outerHTML = `<div class="done-badge">✦ Received</div>`;
+function completeAffirm(event,type='affirm') {
+  event.target.outerHTML=`<div class="done-badge">✦ Received</div>`;
   showToast('Intention set. The grove witnessed it. 🕊️');
 }
 
 // ══ VIBES ══
 async function addVibe() {
-  const input = document.getElementById('vibeInput');
-  const val = input.value.trim();
+  const input=document.getElementById('vibeInput');
+  const val=input.value.trim();
   if (!val) return;
-  if (state.vibes.find(v => v.label.toLowerCase() === val.toLowerCase())) { showToast('Already in your collection ✨'); input.value=''; return; }
-  const { data } = await supa.from('grove_vibes').insert({ user_id: state.user.id, icon:'✨', label:val }).select().single();
+  if (state.vibes.find(v=>v.label.toLowerCase()===val.toLowerCase())) { showToast('Already in your collection ✨'); input.value=''; return; }
+  const {data}=await supa.from('grove_vibes').insert({user_id:state.user.id,icon:'✨',label:val}).select().single();
   if (data) state.vibes.push(data);
-  input.value = '';
+  input.value='';
   renderVibes();
   showToast('Added to your grove ✦');
   SoundSystem.leafRustle();
-  if (state.vibes.length >= 2) setTimeout(generateVibePoetry, 600);
+  if (state.vibes.length>=2) setTimeout(generateVibePoetry,600);
 }
-
 async function removeVibe(id) {
-  await supa.from('grove_vibes').delete().eq('id', id);
-  state.vibes = state.vibes.filter(v => v.id !== id);
+  await supa.from('grove_vibes').delete().eq('id',id);
+  state.vibes=state.vibes.filter(v=>v.id!==id);
   renderVibes();
 }
-
-async function addSuggested(icon, label) {
-  if (state.vibes.find(v => v.label === label)) { showToast('Already in your collection ✨'); return; }
-  const { data } = await supa.from('grove_vibes').insert({ user_id: state.user.id, icon, label }).select().single();
+async function addSuggested(icon,label) {
+  if (state.vibes.find(v=>v.label===label)) { showToast('Already in your collection ✨'); return; }
+  const {data}=await supa.from('grove_vibes').insert({user_id:state.user.id,icon,label}).select().single();
   if (data) state.vibes.push(data);
   renderVibes();
   showToast(`${icon} Added to your grove`);
   SoundSystem.leafRustle();
-  if (state.vibes.length >= 2) setTimeout(generateVibePoetry, 600);
+  if (state.vibes.length>=2) setTimeout(generateVibePoetry,600);
 }
-
 function renderVibes() {
-  const grid = document.getElementById('vibesGrid');
-  if (!state.vibes.length) { grid.innerHTML = '<div style="font-family:\'Playfair Display\',serif;font-style:italic;color:var(--soft);font-size:14px">Start adding things that light you up ✨</div>'; return; }
-  grid.innerHTML = '';
-  state.vibes.forEach(v => {
-    const chip = document.createElement('div');
-    chip.className = 'vibe-chip';
-    chip.innerHTML = `<span>${v.icon}</span>${v.label}<span class="chip-x" onclick="removeVibe('${v.id}')">✕</span>`;
+  const grid=document.getElementById('vibesGrid');
+  if (!state.vibes.length) { grid.innerHTML='<div style="font-family:\'Cormorant Garamond\',serif;font-style:italic;color:var(--soft);font-size:15px;">Add what lights you up ✨</div>'; return; }
+  grid.innerHTML='';
+  state.vibes.forEach(v=>{
+    const chip=document.createElement('div');
+    chip.className='vibe-chip';
+    chip.innerHTML=`<span>${v.icon}</span>${v.label}<span class="chip-x" onclick="removeVibe('${v.id}')">✕</span>`;
     grid.appendChild(chip);
   });
 }
-
 function renderSuggested() {
-  const c = document.getElementById('suggestedVibes');
-  c.innerHTML = '';
-  suggestedVibesList.forEach(v => {
-    const chip = document.createElement('div');
-    chip.className = 'suggested-chip';
-    chip.textContent = `${v.icon} ${v.label}`;
-    chip.onclick = () => addSuggested(v.icon, v.label);
+  const c=document.getElementById('suggestedVibes');
+  c.innerHTML='';
+  suggestedVibesList.forEach(v=>{
+    const chip=document.createElement('div');
+    chip.className='suggested-chip';
+    chip.textContent=`${v.icon} ${v.label}`;
+    chip.onclick=()=>addSuggested(v.icon,v.label);
     c.appendChild(chip);
   });
 }
 
-// ══ VIBE IDENTITY POETRY ══
+// ══ VIBE POETRY ══
 async function generateVibePoetry() {
-  if (!state.vibes || state.vibes.length < 2) return;
-  const card = document.getElementById('vibeIdentityCard');
-  const textEl = document.getElementById('vibePoetryText');
-  if (!card || !textEl) return;
-  card.style.display = 'block';
-  textEl.innerHTML = '<span class="loading-dots">The grove is reading your soul<span>.</span><span>.</span><span>.</span></span>';
-  const vibeList = state.vibes.map(v => `${v.icon} ${v.label}`).join(', ');
+  if (!state.vibes||state.vibes.length<2) return;
+  const card=document.getElementById('vibeIdentityCard');
+  const textEl=document.getElementById('vibePoetryText');
+  if (!card||!textEl) return;
+  card.style.display='block';
+  textEl.innerHTML='<span class="loading-dots">The grove is reading your soul<span>.</span><span>.</span><span>.</span></span>';
+  const vibeList=state.vibes.map(v=>`${v.icon} ${v.label}`).join(', ');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        system: `You are a poetic soul reader for a magical wellness app called My Inner Grove. 
-Based on someone's personal "vibes collection" — things that light them up — write a short, deeply personal poetic description of who they are. 
-2-3 sentences max. Lyrical, warm, specific to their vibes. Never generic. Like a love letter from the forest to their soul.
-Do not use quotation marks. Do not start with "You are". Start with something unexpected and beautiful.`,
-        messages: [{ role: 'user', content: `Their soul resonates with: ${vibeList}` }]
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:200,
+        system:`You are a poetic soul reader for a magical wellness app called My Inner Grove. Based on someone's personal "vibes collection" — things that light them up — write a short, deeply personal poetic description of who they are. 2-3 sentences max. Lyrical, warm, specific to their vibes. Never generic. Like a love letter from the forest to their soul. Do not use quotation marks. Do not start with "You are". Start with something unexpected and beautiful.`,
+        messages:[{role:'user',content:`Their soul resonates with: ${vibeList}`}]
       })
     });
-    const data = await res.json();
-    const poetry = data.content?.[0]?.text || '';
-    textEl.textContent = poetry;
+    const data=await res.json();
+    const poetry=data.content?.[0]?.text||'';
+    textEl.textContent=poetry;
     SoundSystem.leafRustle();
   } catch(e) {
-    textEl.textContent = 'Someone who finds magic in small things and carries warmth like a quiet ember. The grove knows your kind — rare and rooted.';
+    textEl.textContent='Someone who finds magic in small things and carries warmth like a quiet ember. The grove knows your kind — rare, rooted, and real.';
   }
 }
+function refreshVibePoetry() { generateVibePoetry(); }
 
-async function refreshVibePoetry() {
-  await generateVibePoetry();
-}
-
-
-  const log = document.getElementById('bloomLog');
-  if (!state.allBlooms.length) { log.innerHTML = '<div class="empty-msg">Your journal awaits, wanderer.<br>Complete your first ritual to begin. 🌱</div>'; return; }
-  const prevCount = log.children.length;
-  log.innerHTML = '';
-  state.allBlooms.slice(0, 30).forEach(b => {
-    const time = new Date(b.completed_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + new Date(b.completed_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    const div = document.createElement('div');
-    div.className = 'bloom-entry';
-    div.innerHTML = `<div class="bloom-emoji">${b.activity_emoji||'🌿'}</div><div><div class="bloom-reason">${b.activity_label}</div><div class="bloom-time">${time}</div></div>`;
+// ══ JOURNAL ══
+function renderJournal() {
+  const log=document.getElementById('bloomLog');
+  if (!state.allBlooms.length) {
+    log.innerHTML='<div class="empty-msg">Your journal awaits, wanderer.<br>Complete your first ritual to begin. 🌱</div>';
+    return;
+  }
+  log.innerHTML='';
+  state.allBlooms.slice(0,40).forEach(b=>{
+    const time=new Date(b.completed_at).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+new Date(b.completed_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const div=document.createElement('div');
+    div.className='bloom-entry';
+    div.innerHTML=`<div class="bloom-emoji">${b.activity_emoji||'🌿'}</div><div><div class="bloom-reason">${b.activity_label}</div><div class="bloom-time">${time}</div></div>`;
     log.appendChild(div);
   });
-  // Leaf rustle when new entries appear 🍃
-  if (state.allBlooms.length > prevCount) SoundSystem.leafRustle();
+}
+
+// ══ ON THIS DAY ══
+function renderOnThisDay() {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear()-1);
+  const yearStr = oneYearAgo.toISOString().split('T')[0];
+  const entry = state.allBlooms.find(b=>b.completed_at?.startsWith(yearStr));
+  if (!entry) return;
+  document.getElementById('onThisDay').style.display='block';
+  document.getElementById('onThisDayTitle').textContent=entry.activity_label;
+  document.getElementById('onThisDayText').textContent=`One year ago you chose to ${entry.activity_label.toLowerCase()}. Look how far you've come. 🌿`;
+}
+
+// ══ MOOD ══
+const moodResponses = {
+  '🌸':["You're blooming — lean into it. Let today be easy and beautiful.","Something in the grove is blooming with you. What a good day to be alive."],
+  '☁️':["Cloudy days are still worth showing up for. The grove is soft today, just for you.","You don't have to be sunshine every day. The clouds are part of the weather too. 🌿"],
+  '🌱':["Growing is quiet work. The grove sees every tiny root you're putting down.","Something in you is becoming. That's enough for today."],
+  '🍂':["Releasing is one of the bravest things you can do. Let it fall. 🍂","What you let go of creates space for what's coming. The grove honors your releasing."],
+  '🌙':["Rest is a ritual too. Be gentle with yourself today — that counts.","Tired is just your body asking for tenderness. The grove says: slow down. That's allowed. 🌙"],
+  '🔥':["That fire in you? Channel it. Do one thing today that scares you a little.","Fired up is energy. Use it for yourself first. 🔥"],
+  '🌊':["Overwhelmed means you care deeply. Let the wave come — you won't drown. 🌊","Breathe first. Everything else second. The grove is steady when you aren't."],
+  '🙏':["Peace is the most powerful place to create from. Stay here as long as you can.","You've found your center. The grove bows to that. 🙏"],
+};
+function selectMood(emoji,label,el) {
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  const responses=moodResponses[emoji]||["The grove sees you exactly as you are. 🌿"];
+  const response=responses[Math.floor(Math.random()*responses.length)];
+  document.getElementById('moodResponseText').textContent=response;
+  document.getElementById('moodResponse').style.display='block';
+  localStorage.setItem('grove_mood_today',JSON.stringify({emoji,label,date:new Date().toISOString().split('T')[0]}));
+  showToast(`${emoji} The grove feels you`);
+}
+
+// ══ GROVE MESSAGES ══
+const groveMessages=[
+  {emoji:'🌿',text:'You came back. The grove missed you.'},
+  {emoji:'🦋',text:'Something is changing in you. The forest can feel it.'},
+  {emoji:'🌙',text:'Even on the hard days, showing up for yourself matters.'},
+  {emoji:'✨',text:'The grove wants you to know — you\'re doing better than you think.'},
+  {emoji:'🌸',text:'Every ritual you complete is an act of love. For yourself.'},
+  {emoji:'🍃',text:'You don\'t have to do all five today. One is enough. One is everything.'},
+  {emoji:'🦉',text:'The old ones say: be patient with yourself. Growth is slow until it isn\'t.'},
+  {emoji:'🌱',text:'Something you planted in yourself a long time ago is starting to bloom. Keep going.'},
+  {emoji:'🌊',text:'You carry more than anyone knows. The grove sees the weight and loves you still.'},
+];
+function maybeShowGroveMessage() {
+  if (Math.random()>0.35) return;
+  const msg=groveMessages[Math.floor(Math.random()*groveMessages.length)];
+  const banner=document.getElementById('groveMessage');
+  if (!banner) return;
+  document.getElementById('groveMessageEmoji').textContent=msg.emoji;
+  document.getElementById('groveMessageText').textContent=msg.text;
+  banner.style.display='block';
+  setTimeout(()=>{
+    banner.style.opacity='0';banner.style.transition='opacity 1.2s';
+    setTimeout(()=>banner.style.display='none',1200);
+  },7000);
+}
+
+// ══ MILESTONES ══
+const milestones=[
+  {rituals:1,emoji:'🌱',title:'First Bloom',text:'You showed up for yourself. That\'s everything.'},
+  {rituals:5,emoji:'🌿',title:'The Grove Stirs',text:'Five rituals complete. The forest is waking up for you.'},
+  {rituals:10,emoji:'🌸',title:'Something\'s Blooming',text:'Ten acts of self love. The grove is flourishing.'},
+  {rituals:25,emoji:'🦋',title:'A Visitor Arrives',text:'A butterfly found your grove. Twenty-five rituals of care.'},
+  {rituals:50,emoji:'🌳',title:'Deep Roots',text:'Fifty rituals. Your grove has deep, deep roots now.'},
+  {rituals:100,emoji:'🌟',title:'Ancient Grove',text:'One hundred acts of self love. You are a force of nature.'},
+  {streak:3,emoji:'🔥',title:'3 Days Strong',text:'Three days in a row. The grove remembers.'},
+  {streak:7,emoji:'🌙',title:'One Week',text:'A full week of showing up. That\'s rare and beautiful.'},
+  {streak:30,emoji:'✨',title:'A Month in the Grove',text:'Thirty days. You\'ve built something real here.'},
+];
+function checkMilestones() {
+  const total=state.allBlooms.length;
+  const streak=state.profile?.streak||0;
+  const seen=JSON.parse(localStorage.getItem('grove_milestones_seen')||'[]');
+  const milestone=milestones.find(m=>{
+    const key=m.rituals?`r${m.rituals}`:`s${m.streak}`;
+    if (seen.includes(key)) return false;
+    if (m.rituals&&total>=m.rituals) return true;
+    if (m.streak&&streak>=m.streak) return true;
+    return false;
+  });
+  if (!milestone) return;
+  const key=milestone.rituals?`r${milestone.rituals}`:`s${milestone.streak}`;
+  seen.push(key);localStorage.setItem('grove_milestones_seen',JSON.stringify(seen));
+  const banner=document.getElementById('milestoneBanner');
+  if (!banner) return;
+  document.getElementById('milestoneEmoji').textContent=milestone.emoji;
+  document.getElementById('milestoneTitle').textContent=milestone.title;
+  document.getElementById('milestoneText').textContent=milestone.text;
+  banner.style.display='block';
+  showToast(`${milestone.emoji} ${milestone.title}!`);
+  SoundSystem.sparkle();
+}
+
+// ══ SPARKLES ══
+function spawnSparkles() {
+  const emojis=['✨','🌟','💫','🌸','🍃','⭐','🌿','💛','🦋','🌱'];
+  for (let i=0;i<14;i++) {
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.cssText=`position:fixed;pointer-events:none;z-index:9999;font-size:${10+Math.random()*18}px;left:${15+Math.random()*70}%;top:${25+Math.random()*45}%;transition:all ${0.9+Math.random()*0.9}s ease-out;opacity:1;transform:translate(0,0)`;
+      document.body.appendChild(el);
+      requestAnimationFrame(()=>{
+        el.style.transform=`translate(${-70+Math.random()*140}px,${-110-Math.random()*110}px)`;
+        el.style.opacity='0';
+      });
+      setTimeout(()=>el.remove(),2200);
+    },i*90);
+  }
 }
 
 // ══ NAV ══
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-function switchTab(tab, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+function switchTab(tab,el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+tab).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   if (el) el.classList.add('active');
 }
-
 function setNav(id) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
 }
-
 function getGroveToast() {
-  const msgs = ['A tree stirs in your grove ✨','The grove blooms for you 🌸','A creature wanders closer 🦋','Your grove grows deeper 🌲','Magic rises through the grove ✦','The mist parts for you 🌙','Something ancient awakens 🌿'];
+  const msgs=['A tree stirs in your grove ✨','The grove blooms for you 🌸','A creature wanders closer 🦋','Your grove grows deeper 🌲','Magic rises through the forest ✦','The mist parts for you 🌙','Something ancient awakens 🌿','The fireflies multiply 💫'];
   return msgs[Math.floor(Math.random()*msgs.length)];
 }
-
-// ══ GROVE WELCOME ══
 function showGroveWelcome() {
-  const h = new Date().getHours();
-  const name = state.profile?.name || 'wanderer';
-  const streak = state.profile?.streak || 0;
-  let msg = '';
-  if (h < 6) msg = `The grove is quiet at this hour, ${name}. So is the world. 🌙`;
-  else if (h < 12) msg = `Good morning, ${name}. The grove has been waiting for you. 🌅`;
-  else if (h < 17) msg = `Welcome back, ${name}. The grove is always here. 🌿`;
-  else if (h < 20) msg = `The golden hour is yours, ${name}. Come rest a while. 🌤️`;
-  else msg = `Evening, ${name}. You made it through another day. 🌙`;
+  const h=new Date().getHours();
+  const name=state.profile?.name||'wanderer';
+  let msg='';
+  if (h<6) msg=`The grove is quiet at this hour, ${name}. So is the world. 🌙`;
+  else if (h<12) msg=`Good morning, ${name}. The grove has been waiting. 🌅`;
+  else if (h<17) msg=`Welcome back, ${name}. The grove is always here. 🌿`;
+  else if (h<20) msg=`The golden hour is yours, ${name}. Come rest a while. 🌤️`;
+  else msg=`Evening, ${name}. You made it through another day. 🌙`;
   showToast(msg);
 }
-
-// ══ MOOD CHECK-IN ══
-const moodResponses = {
-  '🌸': ["You're blooming — lean into it. Let today be easy and beautiful.", "Something in the grove is blooming with you. What a good day to be alive."],
-  '☁️': ["Cloudy days are still days worth showing up for. The grove is soft today, just for you.", "You don't have to be sunshine every day. The clouds are part of the weather too. 🌿"],
-  '🌱': ["Growing is quiet work. The grove sees every tiny root you're putting down.", "Something in you is becoming. That's enough for today."],
-  '🍂': ["Releasing is one of the bravest things you can do. Let it fall. 🍂", "What you let go of creates space for what's coming. The grove honors your releasing."],
-  '🌙': ["Rest is a ritual too. Be gentle with yourself today — that counts as self care.", "Tired is just your body asking for tenderness. The grove says: slow down, that's allowed. 🌙"],
-};
-
-function selectMood(emoji, label, el) {
-  // Update buttons
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  if (el) el.classList.add('selected');
-
-  // Show response
-  const responses = moodResponses[emoji] || ["The grove sees you exactly as you are. 🌿"];
-  const response = responses[Math.floor(Math.random() * responses.length)];
-  document.getElementById('moodResponseText').textContent = response;
-  document.getElementById('moodResponse').style.display = 'block';
-
-  // Update greeting
-  const greetings = {
-    '🌸': 'Let today bloom for you 🌸',
-    '☁️': 'The grove holds space for all weathers ☁️',
-    '🌱': 'Choose what helps you grow today 🌱',
-    '🍂': 'Choose what feels like release today 🍂',
-    '🌙': 'Even one ritual is enough today 🌙',
-  };
-  const greetingEl = document.getElementById('dailyGreeting');
-  if (greetingEl) greetingEl.textContent = greetings[emoji] || 'Choose what calls to you 🌿';
-
-  // Save mood
-  localStorage.setItem('grove_mood_today', JSON.stringify({ emoji, label, date: new Date().toISOString().split('T')[0] }));
-
-  // Switch sound to match mood — use realistic audio
-  stopRealisticSound();
-  setTimeout(() => startRealisticSound(emoji), 400);
-  if (soundPlaying) {
-    stopSound();
-    setTimeout(() => startSound(emoji), 600);
-  }
-  }
-}
-
-// ══ SURPRISE GROVE MESSAGES ══
-const groveMessages = [
-  { emoji:'🌿', text:'You came back. The grove missed you.' },
-  { emoji:'🦋', text:'Something is changing in you. The grove can feel it.' },
-  { emoji:'🌙', text:'Even on the hard days, showing up for yourself matters.' },
-  { emoji:'✨', text:'The grove wants you to know — you\'re doing better than you think.' },
-  { emoji:'🌸', text:'Every ritual you complete is an act of love. For yourself.' },
-  { emoji:'🍃', text:'You don\'t have to do all five today. One is enough. One is everything.' },
-  { emoji:'🦉', text:'The old ones in the grove say: be patient with yourself. Growth is slow and invisible until it isn\'t.' },
-  { emoji:'🌱', text:'Something you planted in yourself a long time ago is starting to grow. Keep going.' },
-];
-
-function maybeShowGroveMessage() {
-  // Show a surprise message ~30% of the time
-  if (Math.random() > 0.3) return;
-  const msg = groveMessages[Math.floor(Math.random() * groveMessages.length)];
-  const banner = document.getElementById('groveMessage');
-  if (!banner) return;
-  document.getElementById('groveMessageEmoji').textContent = msg.emoji;
-  document.getElementById('groveMessageText').textContent = msg.text;
-  banner.style.display = 'block';
-  setTimeout(() => { banner.style.opacity = '0'; banner.style.transition = 'opacity 1s'; setTimeout(() => banner.style.display = 'none', 1000); }, 8000);
-}
-
-// ══ MILESTONES ══
-const milestones = [
-  { rituals: 1,   emoji:'🌱', title:'First Bloom', text:'You showed up for yourself. That\'s everything.' },
-  { rituals: 5,   emoji:'🌿', title:'The Grove Stirs', text:'Five rituals complete. The forest is waking up for you.' },
-  { rituals: 10,  emoji:'🌸', title:'Something\'s Blooming', text:'Ten acts of self love. The grove is flourishing.' },
-  { rituals: 25,  emoji:'🦋', title:'A Visitor Arrives', text:'A butterfly found your grove. Twenty-five rituals of care.' },
-  { rituals: 50,  emoji:'🌳', title:'Deep Roots', text:'Fifty rituals. Your grove has deep, deep roots now.' },
-  { rituals: 100, emoji:'🌟', title:'Ancient Grove', text:'One hundred acts of self love. You are a force of nature.' },
-  { streak: 3,    emoji:'🔥', title:'3 Days Strong', text:'Three days in a row. The grove remembers.' },
-  { streak: 7,    emoji:'🌙', title:'One Week', text:'A full week of showing up. That\'s rare and beautiful.' },
-  { streak: 30,   emoji:'✨', title:'A Month in the Grove', text:'Thirty days. You\'ve built something real here.' },
-];
-
-function checkMilestones() {
-  const total = state.allBlooms.length;
-  const streak = state.profile?.streak || 0;
-  const seen = JSON.parse(localStorage.getItem('grove_milestones_seen') || '[]');
-
-  const milestone = milestones.find(m => {
-    const key = m.rituals ? `r${m.rituals}` : `s${m.streak}`;
-    if (seen.includes(key)) return false;
-    if (m.rituals && total >= m.rituals) return true;
-    if (m.streak && streak >= m.streak) return true;
-    return false;
-  });
-
-  if (!milestone) return;
-
-  const key = milestone.rituals ? `r${milestone.rituals}` : `s${milestone.streak}`;
-  seen.push(key);
-  localStorage.setItem('grove_milestones_seen', JSON.stringify(seen));
-
-  const banner = document.getElementById('milestoneBanner');
-  if (!banner) return;
-  document.getElementById('milestoneEmoji').textContent = milestone.emoji;
-  document.getElementById('milestoneTitle').textContent = milestone.title;
-  document.getElementById('milestoneText').textContent = milestone.text;
-  banner.style.display = 'block';
-  banner.classList.add('show');
-  showToast(`${milestone.emoji} ${milestone.title}!`);
-  SoundSystem.sparkle(); // ✨ sparkle on milestone
-}
-
-// ══ REALISTIC MOOD AUDIO ══
-// Free ambient sounds from Pixabay (royalty free)
-const MOOD_AUDIO_URLS = {
-  '🌸': 'https://cdn.pixabay.com/audio/2022/03/15/audio_1b9e6b0fd5.mp3', // morning birds
-  '☁️': 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0c4b14d40.mp3', // gentle rain
-  '🌱': 'https://cdn.pixabay.com/audio/2021/08/09/audio_dc39bfc2b3.mp3', // forest ambience
-  '🍂': 'https://cdn.pixabay.com/audio/2022/10/16/audio_e1b9c20c8e.mp3', // autumn wind
-  '🌙': 'https://cdn.pixabay.com/audio/2022/03/10/audio_270f5ed346.mp3', // night crickets
-  '🔥': 'https://cdn.pixabay.com/audio/2022/01/18/audio_9d4fd56b07.mp3', // crackling fire
-  '🌊': 'https://cdn.pixabay.com/audio/2021/09/06/audio_6ecd8caf5b.mp3', // ocean waves
-  '💪': 'https://cdn.pixabay.com/audio/2022/03/15/audio_1b9e6b0fd5.mp3', // uplifting forest
-  '😂': 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3', // sunny meadow
-  '🙏': 'https://cdn.pixabay.com/audio/2021/11/01/audio_cb4fc2f2e6.mp3', // singing bowl
-};
-
-let moodAudioEl = null;
-
-function startRealisticSound(mood) {
-  stopRealisticSound();
-  const url = MOOD_AUDIO_URLS[mood] || MOOD_AUDIO_URLS['🌱'];
-  moodAudioEl = new Audio(url);
-  moodAudioEl.loop = true;
-  moodAudioEl.volume = 0;
-  moodAudioEl.play().catch(() => {});
-  // Fade in
-  let vol = 0;
-  const fade = setInterval(() => {
-    vol = Math.min(0.5, vol + 0.02);
-    if (moodAudioEl) moodAudioEl.volume = vol;
-    if (vol >= 0.5) clearInterval(fade);
-  }, 100);
-}
-
-function stopRealisticSound() {
-  if (moodAudioEl) {
-    // Fade out
-    const el = moodAudioEl;
-    let vol = el.volume;
-    const fade = setInterval(() => {
-      vol = Math.max(0, vol - 0.05);
-      try { el.volume = vol; } catch(e) {}
-      if (vol <= 0) { clearInterval(fade); try { el.pause(); el.src = ''; } catch(e) {} }
-    }, 80);
-    moodAudioEl = null;
-  }
-}
-
-
-const SoundSystem = {
-  ctx: null,
-  bgGain: null,
-  bgNodes: [],
-  enabled: true,
-
-  init() {
-    if (this.ctx) return;
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    this.bgGain = this.ctx.createGain();
-    this.bgGain.gain.value = 0.18;
-    this.bgGain.connect(this.ctx.destination);
-  },
-
-  // Chime sound for achievements
-  chime(notes = [523, 659, 784, 1047]) {
-    if (!this.enabled) return;
-    try {
-      this.init();
-      notes.forEach((freq, i) => {
-        setTimeout(() => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 1.2);
-        }, i * 120);
-      });
-    } catch(e) {}
-  },
-
-  // Soft leaf rustle for new items appearing
-  leafRustle() {
-    if (!this.enabled) return;
-    try {
-      this.init();
-      const bufSize = this.ctx.sampleRate * 0.4;
-      const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/bufSize, 2);
-      const src = this.ctx.createBufferSource();
-      src.buffer = buf;
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.value = 3000;
-      filter.Q.value = 0.8;
-      const gain = this.ctx.createGain();
-      gain.gain.value = 0.25;
-      src.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-      src.start();
-    } catch(e) {}
-  },
-
-  // Gentle pop for completing a ritual
-  pop() {
-    if (!this.enabled) return;
-    try {
-      this.init();
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.15);
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + 0.2);
-    } catch(e) {}
-  },
-
-  // Magical sparkle for milestones
-  sparkle() {
-    if (!this.enabled) return;
-    this.chime([784, 988, 1175, 1568, 2093]);
-  },
-
-  // Start relaxing forest ambient music
-  startAmbient() {
-    if (!this.enabled) return;
-    try {
-      this.init();
-      this.stopAmbient();
-
-      // Soft wind pad
-      const makeNoise = (color) => {
-        const bufSize = this.ctx.sampleRate * 3;
-        const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-        for (let i = 0; i < bufSize; i++) {
-          const w = Math.random()*2-1;
-          if (color==='pink') {
-            b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;
-            b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;
-            b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;
-            data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)/7;b6=w*0.115926;
-          } else { data[i]=w; }
-        }
-        const src = this.ctx.createBufferSource();
-        src.buffer = buf; src.loop = true; return src;
-      };
-
-      // Wind
-      const wind = makeNoise('pink');
-      const windFilter = this.ctx.createBiquadFilter();
-      windFilter.type = 'lowpass';
-      windFilter.frequency.value = 500;
-      const windGain = this.ctx.createGain();
-      windGain.gain.value = 0.6;
-      wind.connect(windFilter);
-      windFilter.connect(windGain);
-      windGain.connect(this.bgGain);
-      wind.start();
-      this.bgNodes.push(wind);
-
-      // Gentle drone notes (forest humming)
-      [130.81, 196, 261.63].forEach((freq, i) => {
-        const osc = this.ctx.createOscillator();
-        const g = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        g.gain.value = 0.08 / (i + 1);
-        osc.connect(g);
-        g.connect(this.bgGain);
-        osc.start();
-        this.bgNodes.push(osc);
-      });
-
-      // Chirping birds occasionally
-      const chirp = () => {
-        if (this.bgNodes.length === 0) return;
-        try {
-          const osc = this.ctx.createOscillator();
-          const eg = this.ctx.createGain();
-          const baseFreq = 1800 + Math.random() * 1400;
-          osc.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(baseFreq * 1.4, this.ctx.currentTime + 0.08);
-          osc.type = 'sine';
-          eg.gain.setValueAtTime(0.08, this.ctx.currentTime);
-          eg.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
-          osc.connect(eg);
-          eg.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.15);
-        } catch(e) {}
-        setTimeout(chirp, 3000 + Math.random() * 8000);
-      };
-      setTimeout(chirp, 2000);
-
-      // Gentle piano melody
-      const melody = [261.63, 329.63, 392, 329.63, 261.63, 196, 261.63, 329.63];
-      let noteIdx = 0;
-      const playMelody = () => {
-        if (this.bgNodes.length === 0) return;
-        try {
-          const osc = this.ctx.createOscillator();
-          const eg = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.value = melody[noteIdx % melody.length];
-          noteIdx++;
-          eg.gain.setValueAtTime(0.12, this.ctx.currentTime);
-          eg.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 2);
-          osc.connect(eg);
-          eg.connect(this.bgGain);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 2);
-        } catch(e) {}
-        setTimeout(playMelody, 2500 + Math.random() * 1500);
-      };
-      setTimeout(playMelody, 1000);
-
-    } catch(e) { console.error(e); }
-  },
-
-  stopAmbient() {
-    this.bgNodes.forEach(n => { try { n.stop(); n.disconnect(); } catch(e){} });
-    this.bgNodes = [];
-  },
-
-  toggle() {
-    this.enabled = !this.enabled;
-    if (!this.enabled) {
-      this.stopAmbient();
-    } else {
-      this.startAmbient();
-    }
-    return this.enabled;
-  }
-};
-
-
-// ══ SPARKLE PARTICLES ══
-function spawnSparkles() {
-  const emojis = ['✨','🌟','💫','🌸','🍃','⭐','🌿','💛'];
-  for (let i = 0; i < 12; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.cssText = `position:fixed;pointer-events:none;z-index:9999;font-size:${12+Math.random()*16}px;left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;transition:all ${0.8+Math.random()*0.8}s ease-out;opacity:1;transform:translate(0,0)`;
-      document.body.appendChild(el);
-      requestAnimationFrame(() => {
-        el.style.transform = `translate(${-60+Math.random()*120}px,${-100-Math.random()*100}px)`;
-        el.style.opacity = '0';
-      });
-      setTimeout(() => el.remove(), 2000);
-    }, i * 80);
-  }
-}
-
 function applyWinddownMode() {
-  const h = new Date().getHours();
-  if (h >= 20 || h < 5) {
-    document.body.classList.add('winddown');
-    // Softer greeting
-    const greeting = document.getElementById('dailyGreeting');
-    if (greeting && !greeting.dataset.moodSet) {
-      greeting.textContent = 'Wind down with something gentle tonight 🌙';
-    }
-  }
+  const h=new Date().getHours();
+  if (h>=20||h<5) document.body.classList.add('winddown');
 }
-
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 // ══ WELCOME EFFECTS ══
 function buildStars() {
-  const s = document.getElementById('starsWrap');
-  for (let i=0;i<60;i++) {
-    const star = document.createElement('div');
+  const s=document.getElementById('starsWrap');
+  for (let i=0;i<70;i++) {
+    const star=document.createElement('div');
     star.className='star';
-    star.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*60}%;--d:${2+Math.random()*4}s;--o:${.3+Math.random()*.7};--delay:${Math.random()*3}s`;
+    const size=i%10===0?3:i%4===0?2:1;
+    star.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*65}%;width:${size}px;height:${size}px;--d:${2+Math.random()*4}s;--o:${.2+Math.random()*.8};--delay:${Math.random()*4}s`;
     s.appendChild(star);
   }
 }
 function buildFlies() {
-  const f = document.getElementById('fliesWrap');
-  for (let i=0;i<10;i++) {
-    const fly = document.createElement('div');
+  const f=document.getElementById('fliesWrap');
+  for (let i=0;i<14;i++) {
+    const fly=document.createElement('div');
     fly.className='fly';
-    fly.style.cssText=`left:${5+Math.random()*90}%;top:${20+Math.random()*60}%;--fd:${4+Math.random()*5}s;--fb:${1+Math.random()*2}s;--x1:${-25+Math.random()*50}px;--y1:${-25+Math.random()*25}px;--x2:${-25+Math.random()*50}px;--y2:${-50+Math.random()*25}px;--x3:${-25+Math.random()*50}px;--y3:${-40+Math.random()*25}px;--fdelay:${Math.random()*4}s`;
+    fly.style.cssText=`left:${5+Math.random()*90}%;top:${22+Math.random()*60}%;--fd:${4+Math.random()*5}s;--fb:${1+Math.random()*2}s;--x1:${-28+Math.random()*56}px;--y1:${-28+Math.random()*28}px;--x2:${-28+Math.random()*56}px;--y2:${-56+Math.random()*28}px;--x3:${-28+Math.random()*56}px;--y3:${-42+Math.random()*28}px;--fdelay:${Math.random()*5}s`;
     f.appendChild(fly);
   }
 }
 
 // ══ INIT ══
 document.addEventListener('DOMContentLoaded', async () => {
-  buildStars(); buildFlies();
-
-  // Check for existing session
+  buildStars();
+  buildFlies();
+  buildBgParticles();
   try {
     const { data: { session } } = await supa.auth.getSession();
-    if (session?.user) {
-      await loadApp(session.user);
-      return;
-    }
+    if (session?.user) { await loadApp(session.user); return; }
   } catch(e) { console.error(e); }
   showScreen('welcome');
 });
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 </script>
 </body>
