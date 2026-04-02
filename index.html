@@ -863,9 +863,15 @@ async function fetchAffirm(key){
   const el=document.getElementById(key==='affirm'?'affirmText':'prayerText');
   if(!el)return;
   const today=new Date().toISOString().split('T')[0];
-  const cacheKey=`grove_${key}_${today}_${state.user?.id}`;
+  const userId=state.user?.id||'anon';
+  const cacheKey=`grove_${key}_${today}_${userId}`;
+
+  // Clear stale cache from previous days
+  Object.keys(localStorage).filter(k=>k.startsWith(`grove_${key}_`)&&!k.endsWith(`_${userId}`)||k.startsWith(`grove_${key}_`)&&!k.includes(today)).forEach(k=>localStorage.removeItem(k));
+
   const cached=localStorage.getItem(cacheKey);
   if(cached&&!el.dataset.forceRefresh){el.innerHTML=cached;return;}
+
   el.innerHTML=`<span class="loading-dots">${key==='affirm'?'The grove is writing for you':'Summoning your mantra'}<span>.</span><span>.</span><span>.</span></span>`;
   el.dataset.forceRefresh='';
   const h=new Date().getHours();
@@ -874,36 +880,37 @@ async function fetchAffirm(key){
   const name=state.profile?.name||'wanderer';
 
   const prompts={
-    // I AM statement — bold, declarative, one powerful sentence
-    affirm:`You are a poetic wellness guide for My Inner Grove. Write ONE powerful "I am" affirmation statement for ${name}. Today is ${today}, it's ${time}. ${vibes?`Their soul resonates with: ${vibes}.`:''}
+    affirm:`You are a poetic wellness guide for My Inner Grove. Write ONE powerful "I am" affirmation statement for ${name}. Today is ${today}, it is ${time}. ${vibes?`Their soul resonates with: ${vibes}.`:''}
 
 Rules:
 - Start with "I am" — this is the whole statement
 - ONE sentence only, no more
 - Bold and declarative — something she would say out loud in the mirror and feel it
 - Use <em> tags on 1-2 powerful words or phrases within the statement
-- About identity, worth, or power — not advice, not gentle, STRONG
-- Make it specific enough to feel personal, not generic
+- About identity, worth, or power — STRONG not gentle
+- Make it personal and specific, never generic
 
-Example style: "I am the kind of woman who shows up — for herself, for her dreams, for the <em>life she is building</em> with her bare hands."
+Example: I am the kind of woman who shows up — for herself, for her dreams, for the <em>life she is building</em> with her bare hands.
 
-Reply with ONLY the I am statement. No preamble. No quotes around it.`,
+Reply with ONLY the I am statement. No quotes. No preamble.`,
 
-    // Mantra — rhythmic, short lines, repeatable like a chant
-    prayer:`You are a spiritual wellness guide for My Inner Grove. Write a short daily mantra for ${name}. Today is ${today}, it's ${time}. ${vibes?`They love: ${vibes}.`:''}
+    prayer:`You are a spiritual wellness guide for My Inner Grove. Write a short daily mantra for ${name}. Today is ${today}, it is ${time}. ${vibes?`They love: ${vibes}.`:''}
 
 Rules:
-- 3-4 SHORT lines, each 5-8 words max
-- Rhythmic and repeatable — it should feel like a chant or breath prayer
+- Exactly 3-4 short lines, each line 4-7 words
+- Rhythmic — reads like a breath prayer or chant
 - Non-denominational but spiritually warm
-- Use \\n between each line so they appear on separate lines
-- Use <em> tags on 1 key phrase across the whole mantra
-- Should feel grounding, like something to return to all day
+- Put a literal newline character between each line
+- Use <em> tags on one key phrase
+- Grounding, returnable, something to whisper all day
 
-Example style:
-"I release what is not mine.\\nI breathe in what I need.\\nI am <em>held by something greater</em>.\\nAnd that is enough."
+Example:
+I release what is not mine.
+I breathe in what I need.
+I am <em>held and whole</em>.
+And that is enough.
 
-Reply with ONLY the mantra lines. No preamble. No quotes.`
+Reply with ONLY the mantra. No quotes. No preamble. Actual line breaks between lines.`
   };
 
   try{
@@ -914,13 +921,26 @@ Reply with ONLY the mantra lines. No preamble. No quotes.`
       localStorage.setItem(cacheKey,text);
       el.innerHTML='';let i=0;
       const iv=setInterval(()=>{if(i<text.length){el.innerHTML=text.substring(0,i+1);i++;}else clearInterval(iv);},15);
+    }else{
+      if(key==='affirm')el.innerHTML='I am <em>more than enough</em> — and I am just getting started.';
+      else el.innerHTML='I release what is not mine.\nI breathe in what I need.\nI am <em>held and whole</em>.\nAnd that is enough.';
     }
-  }catch{
-    if(key==='affirm')el.innerHTML='I am <em>enough</em>, exactly as I am, in this moment and every one that follows.';
+  }catch(err){
+    console.error('Affirmation fetch error:',err);
+    if(key==='affirm')el.innerHTML='I am <em>more than enough</em> — and I am just getting started.';
     else el.innerHTML='I release what is not mine.\nI breathe in what I need.\nI am <em>held and whole</em>.\nAnd that is enough.';
   }
 }
-function refreshAffirm(key){const el=document.getElementById(key==='affirm'?'affirmText':'prayerText');if(el)el.dataset.forceRefresh='true';localStorage.removeItem(`grove_${key}_${new Date().toISOString().split('T')[0]}_${state.user?.id}`);fetchAffirm(key);}
+function refreshAffirm(key){
+  const el=document.getElementById(key==='affirm'?'affirmText':'prayerText');
+  if(el)el.dataset.forceRefresh='true';
+  const today=new Date().toISOString().split('T')[0];
+  const userId=state.user?.id||'anon';
+  localStorage.removeItem(`grove_${key}_${today}_${userId}`);
+  fetchAffirm(key);
+}
+function completeAffirm(event,type='affirm'){event.target.outerHTML=`<div class="done-badge">✦ Received</div>`;showToast(type==='prayer'?'Mantra set. Carry it with you today. 🕊️':'Claimed. The grove witnesses you. 🌿');}
+
 function completeAffirm(event,type='affirm'){event.target.outerHTML=`<div class="done-badge">✦ Received</div>`;showToast(type==='prayer'?'Mantra set. Carry it with you today. 🕊️':'Claimed. The grove witnesses you. 🌿');}
 
 // ══ VIBES ══
