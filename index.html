@@ -550,13 +550,13 @@ body.winddown .affirm-text{color:#ddd8cc;}
     <!-- I AM Affirmation -->
     <div class="affirm-card">
       <div class="washi"></div>
-      <div class="affirm-tag">✦<div class="affirm-ornament"></div>Daily I Am<div class="affirm-ornament"></div>✦</div>
-      <div class="iam-text">I am —</div>
+      <div class="affirm-tag">✦<div class="affirm-ornament"></div>Rooted In This<div class="affirm-ornament"></div>✦</div>
+      <div class="iam-text">rooted in this —</div>
       <div class="affirm-text" id="affirmText">
         <span class="loading-dots">The grove is writing for you<span>.</span><span>.</span><span>.</span></span>
       </div>
       <div class="affirm-row">
-        <button class="affirm-btn" id="affirmBtn" onclick="completeAffirm(event)">I claim this 🌿</button>
+        <button class="affirm-btn" id="affirmBtn" onclick="completeAffirm(event)">I am rooted 🌿</button>
         <button class="refresh-btn" onclick="refreshAffirm('affirm')" title="Refresh">↻</button>
       </div>
     </div>
@@ -757,7 +757,7 @@ const SoundSystem={
   chime(notes=[523,659,784,1047]){if(!this.enabled)return;try{this.init();notes.forEach((freq,i)=>{setTimeout(()=>{const osc=this.ctx.createOscillator();const g=this.ctx.createGain();osc.type='sine';osc.frequency.value=freq;g.gain.setValueAtTime(0.25,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+1.4);osc.connect(g);g.connect(this.ctx.destination);osc.start();osc.stop(this.ctx.currentTime+1.4);},i*130);});}catch(e){}},
   sparkle(){this.chime([784,988,1175,1568,2093]);},
   leafRustle(){if(!this.enabled)return;try{this.init();if(!this.ctx)return;const buf=this.ctx.createBuffer(1,this.ctx.sampleRate*0.4,this.ctx.sampleRate);const data=buf.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2);const src=this.ctx.createBufferSource();src.buffer=buf;const f=this.ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=3200;f.Q.value=0.7;const g=this.ctx.createGain();g.gain.value=0.2;src.connect(f);f.connect(g);g.connect(this.ctx.destination);src.start();}catch(e){}},
-  startAmbient(){if(!this.enabled)return;try{this.init();if(!this.ctx)return;this.stopAmbient();const wind=this.makeNoise('pink');if(!wind)return;const wf=this.ctx.createBiquadFilter();wf.type='lowpass';wf.frequency.value=450;const wg=this.ctx.createGain();wg.gain.value=0.55;wind.connect(wf);wf.connect(wg);wg.connect(this.bgGain);wind.start();this.bgNodes.push(wind);[98,130.81,196].forEach((freq,i)=>{const osc=this.ctx.createOscillator();const g=this.ctx.createGain();osc.type='sine';osc.frequency.value=freq;g.gain.value=0.06/(i+1);osc.connect(g);g.connect(this.bgGain);osc.start();this.bgNodes.push(osc);});const melody=[261.63,329.63,392,523.25,329.63,261.63,196,261.63,329.63,392,523.25,392];let ni=0;const playNote=()=>{if(this.bgNodes.length===0)return;try{const osc=this.ctx.createOscillator();const eg=this.ctx.createGain();osc.type='triangle';osc.frequency.value=melody[ni%melody.length];ni++;eg.gain.setValueAtTime(0.1,this.ctx.currentTime);eg.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+2.5);osc.connect(eg);eg.connect(this.bgGain);osc.start();osc.stop(this.ctx.currentTime+2.5);}catch(e){}setTimeout(playNote,2800+Math.random()*1800);};setTimeout(playNote,800);const chirp=()=>{if(this.bgNodes.length===0)return;try{const sweeps=2+Math.floor(Math.random()*3);for(let s=0;s<sweeps;s++){setTimeout(()=>{const osc=this.ctx.createOscillator();const eg=this.ctx.createGain();const bf=1800+Math.random()*1600;osc.frequency.setValueAtTime(bf,this.ctx.currentTime);osc.frequency.linearRampToValueAtTime(bf*1.35,this.ctx.currentTime+0.07);osc.type='sine';eg.gain.setValueAtTime(0.06,this.ctx.currentTime);eg.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.18);osc.connect(eg);eg.connect(this.ctx.destination);osc.start();osc.stop(this.ctx.currentTime+0.18);},s*120);}}catch(e){}setTimeout(chirp,4000+Math.random()*8000);};setTimeout(chirp,2000);soundPlaying=true;const btn=document.getElementById('soundBtn');if(btn){btn.textContent='🎵 Music on';btn.classList.add('playing');}}catch(e){console.error(e);}},
+  startAmbient(){if(!this.enabled)return;try{this.init();if(!this.ctx)return;this.stopAmbient();const wind=this.makeNoise('pink');if(!wind)return;const wf=this.ctx.createBiquadFilter();wf.type='lowpass';wf.frequency.value=450;const wg=this.ctx.createGain();wg.gain.value=0.55;wind.connect(wf);wf.connect(wg);wg.connect(this.bgGain);wind.start();this.bgNodes.push(wind);[98,130.81,196].forEach((freq,i)=>{const osc=this.ctx.createOscillator();const g=this.ctx.createGain();osc.type='sine';osc.frequency.value=freq;g.gain.value=0.06/(i+1);osc.connect(g);g.connect(this.bgGain);osc.start();this.bgNodes.push(osc);});const melody=[261.63,329.63,392,523.25,329.63,261.63,196,261.63,329.63,392,523.25,392];let ni=0;const playNote=()=>{if(this.bgNodes.length===0)return;try{const osc=this.ctx.createOscillator();const eg=this.ctx.createGain();osc.type='triangle';osc.frequency.value=melody[ni%melody.length];ni++;eg.gain.setValueAtTime(0.035,this.ctx.currentTime);eg.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+3.5);osc.connect(eg);eg.connect(this.bgGain);osc.start();osc.stop(this.ctx.currentTime+2.5);}catch(e){}setTimeout(playNote,9000+Math.random()*6000);};setTimeout(playNote,800);const chirp=()=>{if(this.bgNodes.length===0)return;try{const sweeps=2+Math.floor(Math.random()*3);for(let s=0;s<sweeps;s++){setTimeout(()=>{const osc=this.ctx.createOscillator();const eg=this.ctx.createGain();const bf=1800+Math.random()*1600;osc.frequency.setValueAtTime(bf,this.ctx.currentTime);osc.frequency.linearRampToValueAtTime(bf*1.35,this.ctx.currentTime+0.07);osc.type='sine';eg.gain.setValueAtTime(0.02,this.ctx.currentTime);eg.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.18);osc.connect(eg);eg.connect(this.ctx.destination);osc.start();osc.stop(this.ctx.currentTime+0.18);},s*120);}}catch(e){}setTimeout(chirp,12000+Math.random()*10000);};setTimeout(chirp,2000);soundPlaying=true;const btn=document.getElementById('soundBtn');if(btn){btn.textContent='🎵 Music on';btn.classList.add('playing');}}catch(e){console.error(e);}},
   stopAmbient(){this.bgNodes.forEach(n=>{try{n.stop();n.disconnect();}catch(e){}});this.bgNodes=[];soundPlaying=false;},
   toggle(){this.enabled=!this.enabled;if(!this.enabled){this.stopAmbient();}else{this.startAmbient();}return this.enabled;}
 };
@@ -883,8 +883,8 @@ async function fetchAffirm(key){
     affirm:`You are a poetic wellness guide for My Inner Grove. Write ONE powerful "I am" affirmation statement for ${name}. Today is ${today}, it is ${time}. ${vibes?`Their soul resonates with: ${vibes}.`:''}
 
 Rules:
-- Start with "I am" — this is the whole statement
-- ONE sentence only, no more
+- Write a bold personal declaration — can start any way, not necessarily "I am"
+- ONE sentence only — powerful and rooted
 - Bold and declarative — something she would say out loud in the mirror and feel it
 - Use <em> tags on 1-2 powerful words or phrases within the statement
 - About identity, worth, or power — STRONG not gentle
@@ -892,7 +892,7 @@ Rules:
 
 Example: I am the kind of woman who shows up — for herself, for her dreams, for the <em>life she is building</em> with her bare hands.
 
-Reply with ONLY the I am statement. No quotes. No preamble.`,
+Reply with ONLY the declaration. No quotes. No preamble.`,
 
     prayer:`You are a spiritual wellness guide for My Inner Grove. Write a short daily mantra for ${name}. Today is ${today}, it is ${time}. ${vibes?`They love: ${vibes}.`:''}
 
